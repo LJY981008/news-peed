@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +20,34 @@ public class UsersController {
     public ResponseEntity<String> modifyName(@Valid @RequestBody UpdateUserNameRequestDto updateRequest, HttpServletRequest request){
         Long userId = extractUserIdFromCookie(request);
         usersService.updateUsersName(userId, updateRequest);
+        return ResponseEntity.ok("success");
+    }
+
+    @PutMapping("/modify-password")
+    public ResponseEntity<String> modifyPassword(@Valid @RequestBody UpdatePasswordRequestDto updateRequest, HttpServletRequest request){
+        Long userId = extractUserIdFromCookie(request);
+        usersService.updatePassword(userId, updateRequest);
+        return ResponseEntity.ok("success");
+    }
+
+    @PutMapping("/modify-intro")
+    public ResponseEntity<String> modifyIntro(@Valid @RequestBody UpdateIntroRequestDto updateRequest, HttpServletRequest request){
+        Long userId = extractUserIdFromCookie(request);
+        usersService.updateIntro(userId, updateRequest);
+        return ResponseEntity.ok("success");
+    }
+
+    @PutMapping("/modify-image")
+    public ResponseEntity<String> modiyImage(@Valid @RequestBody UpdateImageRequestDto updateRequest, HttpServletRequest request){
+        Long userId = extractUserIdFromCookie(request);
+        usersService.updateImage(userId, updateRequest);
+        return ResponseEntity.ok("success");
+    }
+
+    @DeleteMapping("/quit")
+    public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUsersRequest deleteRequest, HttpServletRequest request){
+        Long userId = extractUserIdFromCookie(request);
+        usersService.deleteUser(userId, deleteRequest);
         return ResponseEntity.ok("success");
     }
 
