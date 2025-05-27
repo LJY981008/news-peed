@@ -101,12 +101,14 @@ GitHub PR 페이지에서 병합 후 Delete branch 버튼을 클릭한다.
 [API 명세서](https://documenter.getpostman.com/view/44667399/2sB2qdfKhq)
 
 ## ERD
-<img width="926" alt="스크린샷 2025-05-27 오후 2 32 35" src="https://github.com/user-attachments/assets/1a1ace43-f517-4e76-a76d-90fc862903f1" />
+<img width="926" alt="스크린샷 2025-05-27 오후 2 32 35" src="https://github.com/user-attachments/assets/529b682f-5a08-4a25-8faf-dbdcfb3c2374" />
 
 ## Wire Frame
 ### 회원 기능
-<img width="789" alt="스크린샷 2025-05-27 오후 2 04 50" src="https://github.com/user-attachments/assets/91aab181-a957-40a8-848f-22d1a7cc1d4b" />
+<img width="789" alt="스크린샷 2025-05-27 오후 2 04 50" src="https://github.com/user-attachments/assets/d7235ece-c78a-462f-8459-c9c099506017" />
+
 
 ### 게시판 기능</br>
-<img width="691" alt="스크린샷 2025-05-27 오후 2 05 03" src="https://github.com/user-attachments/assets/f6edeeae-41f6-4fe7-b959-7b6fcc913abf" />
+<img width="691" alt="스크린샷 2025-05-27 오후 2 05 03" src="https://github.com/user-attachments/assets/79fd1da2-af65-46fc-8700-62bd426ec231" />
+
 
