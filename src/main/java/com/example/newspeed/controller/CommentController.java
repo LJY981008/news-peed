@@ -63,6 +63,7 @@ public class CommentController {
     public ResponseEntity<CommentRemoveResponseDto> deleteComment(
             @RequestParam Long commentId
     ){
-        commentService.deleteComment(commentId);
+        CommentRemoveResponseDto responseComment = commentService.deleteComment(commentId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
 }
