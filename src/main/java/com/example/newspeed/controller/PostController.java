@@ -26,7 +26,6 @@ public class PostController {
     }
 
     // 게시글 단건 조회
-
     @GetMapping
     public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam Long userId) {
         FindPostResponseDto findDto = postService.findById(userId);
