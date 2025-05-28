@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
+@Builder
 @Table(name = "comments")
 public class Comment extends TimeStampEntity {
 
