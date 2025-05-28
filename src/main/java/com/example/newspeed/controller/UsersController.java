@@ -5,14 +5,13 @@ import com.example.newspeed.service.UsersService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/news-peed")
+@RequestMapping("/news-peed/users")
 public class UsersController {
     private final UsersService usersService;
 
