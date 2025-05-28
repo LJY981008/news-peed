@@ -21,6 +21,10 @@ public class Comment extends TimeStampEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Users user;
+
     public Comment() {
     }
 
@@ -30,10 +34,8 @@ public class Comment extends TimeStampEntity {
 
     public Comment(String content, Post post) {
         this.content = content;
-        this.post = post;
+        //this.post = post;
     }
 
-    //    @ManyToOne
-//    @JoinColumn(name = "writer_id")
-//    private User writer;
+
 }

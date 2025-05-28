@@ -7,13 +7,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
-public class Users extends BaseEntity{
+@Table(name = "users")
+public class Users extends TimeStampEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
     @Email
     @Column(unique = true)
@@ -22,6 +26,12 @@ public class Users extends BaseEntity{
     private String userName;
     private String intro;
     private String profileImageUrl;
+
+    @OneToMany(mappedBy = "users")
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
     public Users(String email, String password, String userName, String intro, String profileImageUrl){
         this.email = email;
