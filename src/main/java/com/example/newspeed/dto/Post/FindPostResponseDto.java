@@ -18,6 +18,16 @@ public class FindPostResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    public FindPostResponseDto(Post post) {
+        this.userId = post.getUserId();
+        this.userName = post.getUsers().getUserName();
+        this.title = post.getTitle();
+        this.contents = post.getContent();
+        this.postImgUrl = post.getUsers().getProfileImageUrl();
+        this.userLikeCount = post.getUserLikeCount();
+        this.createdAt = post.getCreatedAt();
+        this.modifiedAt = post.getModifiedAt();
+    }
 
     public static FindPostResponseDto findPostDto(Post post) {
         return new FindPostResponseDto(
