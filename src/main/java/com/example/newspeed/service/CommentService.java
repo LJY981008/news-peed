@@ -101,4 +101,19 @@ public class CommentService {
                 .build();
         return responseDto;
     }
+
+    public CommentRemoveResponseDto deleteComment(Long commentId) {
+        Optional<Comment> findComment = commentRepository.findById(commentId);
+        if(findComment.isEmpty()) throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+        Comment comment = findComment.get();
+
+        CommentRemoveResponseDto responseDto = CommentRemoveResponseDto.builder()
+                .id(comment.getId())
+                .writer("이름")
+                .content(comment.getContent())
+                .build();
+        commentRepository.delete(comment);
+
+        return responseDto;
+    }
 }

@@ -58,4 +58,11 @@ public class CommentController {
         CommentUpdateResponseDto responseComment = commentService.updateComment(commentId, requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
+
+    @DeleteMapping
+    public ResponseEntity<CommentRemoveResponseDto> deleteComment(
+            @RequestParam Long commentId
+    ){
+        commentService.deleteComment(commentId);
+    }
 }
