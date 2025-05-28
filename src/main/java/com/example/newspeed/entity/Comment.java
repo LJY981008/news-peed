@@ -22,6 +22,10 @@ public class Comment extends TimeStampEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    public Comment() {
+
+    }
+
     public void updateContent(String content) {
         this.content = content;
     }
