@@ -1,8 +1,6 @@
 package com.example.newspeed.service;
 
-import com.example.newspeed.dto.comment.CommentCreateRequestDto;
-import com.example.newspeed.dto.comment.CommentCreateResponseDto;
-import com.example.newspeed.dto.comment.CommentFindResponseDto;
+import com.example.newspeed.dto.comment.*;
 import com.example.newspeed.entity.Comment;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.repository.CommentRepository;
@@ -71,5 +69,36 @@ public class CommentService {
                 .map(CommentFindResponseDto::from)
                 .toList();
         return responseDtoList;
+    }
+
+    /**
+     * 댓글 수정
+     *
+     * @param commentId     수정할 댓글 ID
+     * @param requestDto    {@link CommentUpdateRequestDto} 요청 DTO
+     * @return {@link CommentUpdateResponseDto} 반환 DTO
+     */
+    //TODO 회원 기능 구현 후 이름 적용 필요
+    public CommentUpdateResponseDto updateComment(Long commentId, CommentUpdateRequestDto requestDto) {
+        Optional<Comment> findComment = commentRepository.findById(commentId);
+        if(findComment.isEmpty()) throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+        Comment comment = findComment.get();
+        String prevContent = comment.getContent();
+
+        if(prevContent.equals(requestDto.getContent()))
+            throw new IllegalArgumentException("변경할 내용이 없습니다.");
+
+        comment.updateContent(requestDto.getContent());
+        commentRepository.save(comment);
+
+        CommentUpdateResponseDto responseDto = CommentUpdateResponseDto.builder()
+                .id(comment.getId())
+                .writer("이름")
+                .prevContent(prevContent)
+                .currentContent(comment.getContent())
+                .createdAt(comment.getCreatedAt().toString())
+                .modifiedAt(comment.getModifiedAt().toString())
+                .build();
+        return responseDto;
     }
 }

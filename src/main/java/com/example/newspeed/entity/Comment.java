@@ -6,7 +6,6 @@ import lombok.Getter;
 
 @Getter
 @Entity
-@Builder
 @Table(name = "comments")
 public class Comment extends TimeStampEntity {
 
@@ -21,6 +20,10 @@ public class Comment extends TimeStampEntity {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 
 //    @ManyToOne
 //    @JoinColumn(name = "writer_id")
