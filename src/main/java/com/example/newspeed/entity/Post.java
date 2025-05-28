@@ -3,6 +3,8 @@ package com.example.newspeed.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "posts")
@@ -11,6 +13,9 @@ public class Post extends TimeStampEntity{
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users users;
+
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
 
 //    public void setUsers(Users users) {
 //        this.users = users;

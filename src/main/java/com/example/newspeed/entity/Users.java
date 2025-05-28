@@ -17,6 +17,7 @@ import java.util.List;
 public class Users extends TimeStampEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
     @Email
     @Column(unique = true)
@@ -28,6 +29,9 @@ public class Users extends TimeStampEntity{
 
     @OneToMany(mappedBy = "users")
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
     public Users(String email, String password, String userName, String intro, String profileImageUrl){
         this.email = email;
