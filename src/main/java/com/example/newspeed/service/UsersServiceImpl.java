@@ -68,41 +68,41 @@ public class UsersServiceImpl implements UsersService{
 
     @Override
     @Transactional
-    public void updateUsersName(Long userId, UpdateUserNameRequestDto updateRequest) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 찾을 수 없음"));
+    public void updateUsersName(UpdateUserNameRequestDto updateRequest) {
+        Users user = usersRepository.findByEmail(updateRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
         user.setUserName(updateRequest.getUserName());
     }
 
     @Override
     @Transactional
-    public void updatePassword(Long userId, UpdatePasswordRequestDto updateRequest){
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 찾을 수 없음"));
+    public void updatePassword(UpdatePasswordRequestDto updateRequest){
+        Users user = usersRepository.findByEmail(updateRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
         user.setPassword(updateRequest.getNewPassword());
     }
 
     @Override
     @Transactional
-    public void updateIntro(Long userId, UpdateIntroRequestDto updateRequest) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 찾을 수 없음"));
+    public void updateIntro(UpdateIntroRequestDto updateRequest) {
+        Users user = usersRepository.findByEmail(updateRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
         user.setIntro(updateRequest.getIntro());
     }
 
     @Override
     @Transactional
-    public void updateImage(Long userId, UpdateImageRequestDto updateRequest) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 찾을 수 없음"));
+    public void updateImage(UpdateImageRequestDto updateRequest) {
+        Users user = usersRepository.findByEmail(updateRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
         user.setProfileImageUrl(updateRequest.getProfileImage());
     }
 
     @Override
     @Transactional
-    public void deleteUser(Long userId, DeleteUsersRequestDto deleteRequest) {
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 찾을 수 없음"));
-        usersRepository.delete(user);
+    public void deleteUser(DeleteUsersRequestDto deleteRequest) {
+        Users user = usersRepository.findByEmail(deleteRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
+        usersRepository.delete(user); //Bcrypt 암호화 미적용 상태 - 어떤 비밀번호든 상관없이 삭제 요청시 삭제(암호화 적용 시 구현 예정)
     }
 }

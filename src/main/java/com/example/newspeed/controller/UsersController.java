@@ -61,45 +61,32 @@ public class UsersController {
 
 
     @PutMapping("/modify-name")
-    public ResponseEntity<String> modifyName(@Valid @RequestBody UpdateUserNameRequestDto updateRequest, HttpServletRequest request){
-        Long userId = extractUserIdFromCookie(request);
-        usersService.updateUsersName(userId, updateRequest);
+    public ResponseEntity<String> modifyName(@Valid @RequestBody UpdateUserNameRequestDto updateRequest){
+        usersService.updateUsersName(updateRequest);
         return ResponseEntity.ok("success");
     }
 
     @PutMapping("/modify-password")
-    public ResponseEntity<String> modifyPassword(@Valid @RequestBody UpdatePasswordRequestDto updateRequest, HttpServletRequest request){
-        Long userId = extractUserIdFromCookie(request);
-        usersService.updatePassword(userId, updateRequest);
+    public ResponseEntity<String> modifyPassword(@Valid @RequestBody UpdatePasswordRequestDto updateRequest){
+        usersService.updatePassword(updateRequest);
         return ResponseEntity.ok("success");
     }
 
     @PutMapping("/modify-intro")
-    public ResponseEntity<String> modifyIntro(@Valid @RequestBody UpdateIntroRequestDto updateRequest, HttpServletRequest request){
-        Long userId = extractUserIdFromCookie(request);
-        usersService.updateIntro(userId, updateRequest);
+    public ResponseEntity<String> modifyIntro(@Valid @RequestBody UpdateIntroRequestDto updateRequest){
+        usersService.updateIntro(updateRequest);
         return ResponseEntity.ok("success");
     }
 
     @PutMapping("/modify-image")
-    public ResponseEntity<String> modiyImage(@Valid @RequestBody UpdateImageRequestDto updateRequest, HttpServletRequest request){
-        Long userId = extractUserIdFromCookie(request);
-        usersService.updateImage(userId, updateRequest);
+    public ResponseEntity<String> modiyImage(@Valid @RequestBody UpdateImageRequestDto updateRequest){
+        usersService.updateImage(updateRequest);
         return ResponseEntity.ok("success");
     }
 
     @DeleteMapping("/quit")
-    public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUsersRequestDto deleteRequest, HttpServletRequest request){
-        Long userId = extractUserIdFromCookie(request);
-        usersService.deleteUser(userId, deleteRequest);
+    public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUsersRequestDto deleteRequest){
+        usersService.deleteUser(deleteRequest);
         return ResponseEntity.ok("success");
-    }
-
-    private Long extractUserIdFromCookie(HttpServletRequest request){
-        if(request.getCookies() == null) throw new RuntimeException("there's no cookie");
-        for(Cookie cookie : request.getCookies()){
-            if("userId".equals(cookie.getName())) return Long.valueOf(cookie.getValue());
-        }
-        throw new RuntimeException("there's no cookie");
     }
 }

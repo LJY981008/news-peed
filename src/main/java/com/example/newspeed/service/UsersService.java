@@ -10,13 +10,13 @@ public interface UsersService {
     LoginUserResponseDto logIn(LoginUserRequestDto loginRequest);
     List<SearchUserResponseDto> search(String name, String email);
 
-    void updateUsersName(Long userId, UpdateUserNameRequestDto updateRequest);
+    void updateUsersName(UpdateUserNameRequestDto updateRequest);
 
-    void updatePassword(Long userId, UpdatePasswordRequestDto updateRequest);
+    void updatePassword(UpdatePasswordRequestDto updateRequest);
 
-    void updateIntro(Long userId, UpdateIntroRequestDto updateRequest);
+    void updateIntro(UpdateIntroRequestDto updateRequest);
 
-    void updateImage(Long userId, UpdateImageRequestDto updateRequest);
+    void updateImage(UpdateImageRequestDto updateRequest);
 
-    void deleteUser(Long userId, DeleteUsersRequestDto deleteRequest);
+    void deleteUser(DeleteUsersRequestDto deleteRequest);
 }
