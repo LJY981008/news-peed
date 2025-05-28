@@ -17,6 +17,26 @@ public class PostController {
 
     private final PostService postService;
 
+    /* 토큰 설명
+        private final JwtUtil jwtUtil;
+        토큰 생성 : jwtUtil.createToken(1L, "LJY", UserRole.USER);
+        토큰 생성 메서드 프로퍼티 타입 : public String createToken(Long userId, String name, UserRole userRole)
+        토큰 생성 후 반환 :
+        return ResponseEntity.status(HttpStatus.OK)
+                    .header("Authorization", token)
+                    .body(responseDto);
+
+        인가된 객체 호출
+        Optional<Authentication> authentication = Optional.ofNullable(
+                SecurityContextHolder.getContext().getAuthentication()
+        );
+        if(authentication.isPresent() && authentication.get().getPrincipal() instanceof AuthUserDto){
+            AuthUserDto authUserDto = (AuthUserDto) authentication.get().getPrincipal();
+            Long userId = authUserDto.getId();
+            String email = authUserDto.getEmail();
+        }
+     */
+
 
     //게시글 전체조회
     @GetMapping("/find-all")
