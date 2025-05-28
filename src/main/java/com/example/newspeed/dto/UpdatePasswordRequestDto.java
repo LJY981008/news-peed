@@ -5,11 +5,11 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class UpdateUserNameRequestDto {
+public class UpdatePasswordRequestDto {
     @NotBlank
     @Size
-    private String userName;
+    private String originPassword;
     @NotBlank
     @Size
-    private String password;
+    private String newPassword;
 }

@@ -5,7 +5,6 @@ import com.example.newspeed.service.UsersService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/news-peed")
+@RequestMapping("/news-peed/users")
 public class UsersController {
     private final UsersService usersService;
 
@@ -65,6 +64,34 @@ public class UsersController {
     public ResponseEntity<String> modifyName(@Valid @RequestBody UpdateUserNameRequestDto updateRequest, HttpServletRequest request){
         Long userId = extractUserIdFromCookie(request);
         usersService.updateUsersName(userId, updateRequest);
+        return ResponseEntity.ok("success");
+    }
+
+    @PutMapping("/modify-password")
+    public ResponseEntity<String> modifyPassword(@Valid @RequestBody UpdatePasswordRequestDto updateRequest, HttpServletRequest request){
+        Long userId = extractUserIdFromCookie(request);
+        usersService.updatePassword(userId, updateRequest);
+        return ResponseEntity.ok("success");
+    }
+
+    @PutMapping("/modify-intro")
+    public ResponseEntity<String> modifyIntro(@Valid @RequestBody UpdateIntroRequestDto updateRequest, HttpServletRequest request){
+        Long userId = extractUserIdFromCookie(request);
+        usersService.updateIntro(userId, updateRequest);
+        return ResponseEntity.ok("success");
+    }
+
+    @PutMapping("/modify-image")
+    public ResponseEntity<String> modiyImage(@Valid @RequestBody UpdateImageRequestDto updateRequest, HttpServletRequest request){
+        Long userId = extractUserIdFromCookie(request);
+        usersService.updateImage(userId, updateRequest);
+        return ResponseEntity.ok("success");
+    }
+
+    @DeleteMapping("/quit")
+    public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUsersRequestDto deleteRequest, HttpServletRequest request){
+        Long userId = extractUserIdFromCookie(request);
+        usersService.deleteUser(userId, deleteRequest);
         return ResponseEntity.ok("success");
     }
 
