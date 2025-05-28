@@ -7,6 +7,7 @@ import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +35,6 @@ public class PostService {
 
         Post findPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("없엉"));
         findPost.updatePost(newTitle, newContents);
-
         return new FindPostResponseDto(findPost);
     }
 }

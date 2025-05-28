@@ -38,4 +38,9 @@ public class Post extends TimeStampEntity{
 
     @Column(nullable = false)
     private boolean isUserLiked;
+
+    public void updatePost(String newTitle, String newContents) {
+        this.title = newTitle;
+        this.content = newContents;
+    }
 }
