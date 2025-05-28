@@ -102,6 +102,6 @@ public class UsersServiceImpl implements UsersService{
     public void deleteUser(DeleteUsersRequestDto deleteRequest) {
         Users user = usersRepository.findByEmail(deleteRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
-        usersRepository.delete(user); //Bcrypt 암호화 미적용 상태 - 어떤 비밀번호든 상관없이 삭제 요청시 삭제(암호화 적용 시 구현 예정)
+        usersRepository.delete(user); //Bcrypt 암호화 미적용 상태 - 우선 어떤 비밀번호든 상관없이 삭제 요청시 삭제(암호화 적용 시 구현 예정)
     }
 }
