@@ -3,6 +3,7 @@ package com.example.newspeed.service;
 import com.example.newspeed.dto.*;
 import com.example.newspeed.entity.Users;
 import com.example.newspeed.repository.UsersRepository;
+import com.example.newspeed.util.PasswordEncoder;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
