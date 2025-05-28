@@ -18,11 +18,16 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UsersServiceImpl implements UsersService{
     private final UsersRepository usersRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public SignupUserResponseDto signUp(SignupUserRequestDto signupRequest){
+        // 비밀번호 encoding
+        final String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+
         Users user = new Users(
-                signupRequest.getEmail(), signupRequest.getPassword(), signupRequest.getUserName(),
+                signupRequest.getEmail(), encodedPassword, signupRequest.getUserName(),
                 signupRequest.getIntro(), signupRequest.getProfileImageUrl());
 
         Users savedUser = usersRepository.save(user);
@@ -35,8 +40,8 @@ public class UsersServiceImpl implements UsersService{
         Users findUser = usersRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + loginRequest.getEmail()));
 
-        if(!findUser.getPassword().equals(loginRequest.getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효한 회원 정보가 존재하지 않습니다.");
+        if (!passwordEncoder.matches(loginRequest.getPassword(), findUser.getPassword())) {
+            throw new IllegalArgumentException("Not exist email or password");
         }
 
         return new LoginUserResponseDto(findUser);
