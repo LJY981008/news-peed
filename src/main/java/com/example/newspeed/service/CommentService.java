@@ -37,11 +37,7 @@ public class CommentService {
         if(findPost.isEmpty()) throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
         Post post = findPost.get();
 
-        Comment comment = Comment.builder()
-                .content(requestDto.getContent())
-                .post(post)
-                //.user(loggedInUser)
-                .build();
+        Comment comment = new Comment(requestDto.getContent(), post);
         commentRepository.save(comment);
 
         CommentCreateResponseDto responseDto = CommentCreateResponseDto.builder()
