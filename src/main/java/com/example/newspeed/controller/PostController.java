@@ -6,10 +6,7 @@ import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,9 +26,10 @@ public class PostController {
     }
 
     // 게시글 단건 조회
-    @GetMapping("/post/{id}")
-    public ResponseEntity<FindPostResponseDto> findByIdPost(@PathVariable Long id) {
-        FindPostResponseDto findDto = postService.findById(id);
+
+    @GetMapping
+    public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam @ Long userId) {
+        FindPostResponseDto findDto = postService.findById(userId);
         return new ResponseEntity<>(findDto, HttpStatus.OK);
 
     }
