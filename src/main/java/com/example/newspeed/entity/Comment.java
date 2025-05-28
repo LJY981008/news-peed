@@ -28,14 +28,12 @@ public class Comment extends TimeStampEntity {
     public Comment() {
     }
 
-    public void updateContent(String content) {
-        this.content = content;
-    }
-
     public Comment(String content, Post post) {
         this.content = content;
         //this.post = post;
     }
 
-
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
