@@ -11,4 +11,16 @@ public class Post extends TimeStampEntity{
     @Column(name = "post_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Long userId;
+
+    private String title;
+
+    @Column(columnDefinition = "Long text")
+    private String content;
+
+    private Long userLikeCount;
+
+    private boolean isUserLiked;
+
 }

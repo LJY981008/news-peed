@@ -17,4 +17,8 @@ public class Comment extends TimeStampEntity {
 
     @Column(nullable = false)
     private String content;
+
+    public Comment() {
+
+    }
 }
