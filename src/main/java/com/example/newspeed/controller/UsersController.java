@@ -1,6 +1,6 @@
 package com.example.newspeed.controller;
 
-import com.example.newspeed.dto.UpdateUserNameRequestDto;
+import com.example.newspeed.dto.*;
 import com.example.newspeed.service.UsersService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ public class UsersController {
     }
 
     @DeleteMapping("/quit")
-    public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUsersRequest deleteRequest, HttpServletRequest request){
+    public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUsersRequestDto deleteRequest, HttpServletRequest request){
         Long userId = extractUserIdFromCookie(request);
         usersService.deleteUser(userId, deleteRequest);
         return ResponseEntity.ok("success");
