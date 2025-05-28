@@ -2,9 +2,9 @@ package com.example.newspeed.service;
 
 
 import com.example.newspeed.dto.Post.FindPostResponseDto;
-import com.example.newspeed.repository.CommentRepository;
+import com.example.newspeed.dto.post.CreatePostResponseDto;
+import com.example.newspeed.entity.Post;
 import com.example.newspeed.repository.PostRepository;
-import com.example.newspeed.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +19,11 @@ public class PostService {
     // 게시글 조회
     public List<FindPostResponseDto> findPost(){
         return postRepository.findAll().stream().map(FindPostResponseDto::findPostDto).toList();
+    }
+    // 게시글 생성
+    public CreatePostResponseDto createPost(String title, String content, String imageUrl) {
+        Post post = new Post(title, content, imageUrl);
+        postRepository.save(post);
+        return new CreatePostResponseDto();
     }
 }
