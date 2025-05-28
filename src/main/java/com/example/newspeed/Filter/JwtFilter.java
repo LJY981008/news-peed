@@ -33,49 +33,49 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain chain
     ) throws IOException, ServletException {
-        String bearerJwt = request.getHeader("Authorization");
-
-        if (bearerJwt == null) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        String jwt = jwtUtil.substringToken(bearerJwt);
-
-        try {
-            // JWT 유효성 검사와 claims 추출
-            Claims claims = jwtUtil.extractClaims(jwt);
-            if (claims == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
-                return;
-            }
-
-            Long userId = jwtUtil.getUserId(jwt);
-            UserRole userRole = jwtUtil.getUserRole(jwt);
-            String email = jwtUtil.getEmail(jwt);
-
-            AuthUserDto authUser = new AuthUserDto(userId, email, userRole);
-
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    authUser, "", List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name()))
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-            chain.doFilter(request, response);
-
-        } catch (SecurityException | MalformedJwtException e) {
-            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
-        } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
-        } catch (Exception e) {
-            log.error("Internal server error", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+//        String bearerJwt = request.getHeader("Authorization");
+//
+//        if (bearerJwt == null) {
+//            chain.doFilter(request, response);
+//            return;
+//        }
+//
+//        String jwt = jwtUtil.substringToken(bearerJwt);
+//
+//        try {
+//            // JWT 유효성 검사와 claims 추출
+//            Claims claims = jwtUtil.extractClaims(jwt);
+//            if (claims == null) {
+//                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
+//                return;
+//            }
+//
+//            Long userId = jwtUtil.getUserId(jwt);
+//            UserRole userRole = jwtUtil.getUserRole(jwt);
+//            String email = jwtUtil.getEmail(jwt);
+//
+//            AuthUserDto authUser = new AuthUserDto(userId, email, userRole);
+//
+//            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+//                    authUser, "", List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name()))
+//            );
+//
+//            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+//
+//            chain.doFilter(request, response);
+//
+//        } catch (SecurityException | MalformedJwtException e) {
+//            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다.");
+//        } catch (ExpiredJwtException e) {
+//            log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 JWT 토큰입니다.");
+//        } catch (UnsupportedJwtException e) {
+//            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
+//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
+//        } catch (Exception e) {
+//            log.error("Internal server error", e);
+//            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//        }
     }
 }
