@@ -1,5 +1,6 @@
 package com.example.newspeed.controller;
 
+import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.comment.*;
 import com.example.newspeed.service.CommentService;
 import jakarta.validation.Valid;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping(Const.COMMENT_URL)
 public class CommentController {
 
     private final CommentService commentService;

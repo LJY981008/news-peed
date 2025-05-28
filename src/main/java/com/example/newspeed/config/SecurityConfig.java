@@ -1,6 +1,8 @@
 package com.example.newspeed.config;
 
 import com.example.newspeed.Filter.JwtFilter;
+import com.example.newspeed.constant.Const;
+import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.authentication.JwtAccessDeniedHandler;
 import com.example.newspeed.exception.authentication.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +31,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
-                .cors(Customizer.withDefaults()) //Cross-Origin Resource Sharing
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session
                         -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests( auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/news-peed/comments").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/news-peed/comments").hasRole("User")
-                        .requestMatchers(HttpMethod.DELETE, "/news-peed/comments").hasRole("User")
-                        .requestMatchers(HttpMethod.PATCH, "/news-peed/comments").hasRole("User")
+                        .requestMatchers(HttpMethod.GET, Const.COMMENT_URL).permitAll()
+                        .requestMatchers(HttpMethod.POST, Const.COMMENT_URL).hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.DELETE, Const.COMMENT_URL).hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.PATCH, Const.COMMENT_URL).hasRole(UserRole.USER.name())
                         .anyRequest().permitAll()
                 )
                 .authorizeHttpRequests(auth -> auth
