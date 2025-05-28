@@ -1,0 +1,29 @@
+package com.example.newspeed.exception;
+
+import com.example.newspeed.exception.exceptions.NotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * 전역 예외처리 핸들러
+ */
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    /**
+     * {@link NotFoundException} 예외 처리
+     *
+     * @param e 발생한 예외 객체
+     * @return 상태메세지와 에러코드 반환
+     */
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFoundException(NotFoundException e) {
+        Map<String, Object> errors = Map.of("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+    }
+}
