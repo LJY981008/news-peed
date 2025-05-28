@@ -2,7 +2,9 @@ package com.example.newspeed.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Entity
 @Getter
 @Table(name = "posts")

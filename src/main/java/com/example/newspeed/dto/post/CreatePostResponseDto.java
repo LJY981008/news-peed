@@ -1,9 +1,7 @@
 package com.example.newspeed.dto.post;
 
-import com.example.newspeed.entity.Post;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
 
 
 @Getter
