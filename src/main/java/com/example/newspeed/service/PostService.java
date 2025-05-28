@@ -28,4 +28,13 @@ public class PostService {
         Post findPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("없음"));
         return new FindPostResponseDto(findPost);
     }
+
+    // 게시글 수정
+    public FindPostResponseDto updatePost(Long id, String newTitle, String newContents, String password) {
+
+        Post findPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("없엉"));
+        findPost.updatePost(newTitle, newContents);
+
+        return new FindPostResponseDto(findPost);
+    }
 }

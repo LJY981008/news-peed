@@ -2,6 +2,7 @@ package com.example.newspeed.controller;
 
 
 import com.example.newspeed.dto.Post.FindPostResponseDto;
+import com.example.newspeed.dto.Post.UpdatePostRequestDto;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,5 +32,12 @@ public class PostController {
         FindPostResponseDto findDto = postService.findById(userId);
         return new ResponseEntity<>(findDto, HttpStatus.OK);
 
+    }
+
+    // 게시글 수정
+    @PatchMapping
+    public ResponseEntity<FindPostResponseDto> updatePost(@RequestParam Long userId, @RequestBody UpdatePostRequestDto updateDto) {
+       FindPostResponseDto findPostResponseDto = postService.updatePost(userId, updateDto.getTitle(), updateDto.getContents(), updateDto.getPassword());
+       return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
     }
 }

@@ -25,4 +25,9 @@ public class Post extends TimeStampEntity{
     private String content;
     private Long userLikeCount;
     private boolean isUserLiked;
+
+    public void updatePost(String newtitle, String newContents) {
+        this.title = newtitle;
+        this.content = newContents;
+    }
 }
