@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostService {
 
+
     private final PostRepository postRepository;
 
     // 게시글 전체
