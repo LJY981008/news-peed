@@ -22,7 +22,16 @@ public class Comment extends TimeStampEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-//    @ManyToOne
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public Comment(String content, Post post) {
+        this.content = content;
+        this.post = post;
+    }
+
+    //    @ManyToOne
 //    @JoinColumn(name = "writer_id")
 //    private User writer;
 }

@@ -1,9 +1,8 @@
 package com.example.newspeed.controller;
 
-import com.example.newspeed.dto.comment.CommentCreateRequestDto;
-import com.example.newspeed.dto.comment.CommentCreateResponseDto;
-import com.example.newspeed.dto.comment.CommentFindResponseDto;
+import com.example.newspeed.dto.comment.*;
 import com.example.newspeed.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<CommentCreateResponseDto> createComment(
             @RequestParam Long postId,
-            @RequestBody CommentCreateRequestDto requestDto
+            @Valid @RequestBody CommentCreateRequestDto requestDto
     ) {
         CommentCreateResponseDto responseComment = commentService.createComment(postId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseComment);
@@ -49,5 +48,22 @@ public class CommentController {
         List<CommentFindResponseDto> responseComments = commentService.findCommentByPostId(postId);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseComments);
+    }
+
+    @PatchMapping
+    public ResponseEntity<CommentUpdateResponseDto> updateComment(
+            @RequestParam Long commentId,
+            @Valid @RequestParam CommentUpdateRequestDto requestDto
+    ) {
+        CommentUpdateResponseDto responseComment = commentService.updateComment(commentId, requestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseComment);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<CommentRemoveResponseDto> deleteComment(
+            @RequestParam Long commentId
+    ){
+        CommentRemoveResponseDto responseComment = commentService.deleteComment(commentId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
 }
