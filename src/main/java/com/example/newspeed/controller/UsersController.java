@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/news-peed")
@@ -41,6 +43,21 @@ public class UsersController {
     public ResponseEntity<LoginUserResponseDto> lonIn(@Valid @RequestBody LoginUserRequestDto loginRequest){
         LoginUserResponseDto loginResponseDto = usersService.logIn(loginRequest);
         return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
+    }
+
+    /**
+     * 유저 검색 (전체 검색, 이름 검색, 이메일 검색)
+     * @param name 이름
+     * @param email 이메일
+     * @return SearchUserResponseDto
+     * { id, email, userName, intro, profileImageUrl }
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<SearchUserResponseDto>> search(@RequestParam(required = false) String name,
+                                                        @RequestParam(required = false) String email){
+        List<SearchUserResponseDto> searchResponseList = usersService.search(name, email);
+
+        return new ResponseEntity<>(searchResponseList, HttpStatus.OK);
     }
 
 
