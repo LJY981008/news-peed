@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    Optional<Post> findPostById(Long postId);
-    List<Comment> findCommentsByPostId(Long postId);
+//    Optional<Post> findPostById(Long postId);
+//    List<Comment> findCommentsByPostId(Long postId);
 }

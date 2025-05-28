@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     //TODO authorizeHttpRequests 롤 설정 필요
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
                 .cors(Customizer.withDefaults())
@@ -42,7 +42,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, Const.COMMENT_URL).hasRole(UserRole.USER.name())
                         .requestMatchers(HttpMethod.DELETE, Const.COMMENT_URL).hasRole(UserRole.USER.name())
                         .requestMatchers(HttpMethod.PATCH, Const.COMMENT_URL).hasRole(UserRole.USER.name())
-                        .anyRequest().permitAll()
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/news-peed/logout").authenticated()
