@@ -20,11 +20,15 @@ public class UsersServiceImpl implements UsersService{
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
 
+
     @Override
     @Transactional
     public SignupUserResponseDto signUp(SignupUserRequestDto signupRequest){
+<<<<<<< Updated upstream
         // 비밀번호 encoding
         final String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+=======
+>>>>>>> Stashed changes
 
         Users user = new Users(
                 signupRequest.getEmail(), encodedPassword, signupRequest.getUserName(),
@@ -35,8 +39,10 @@ public class UsersServiceImpl implements UsersService{
         return new SignupUserResponseDto(savedUser);
     }
 
+
     @Override
     public LoginUserResponseDto logIn(LoginUserRequestDto loginRequest){
+
         Users findUser = usersRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + loginRequest.getEmail()));
 
@@ -47,29 +53,41 @@ public class UsersServiceImpl implements UsersService{
         return new LoginUserResponseDto(findUser);
     }
 
+
     @Override
     public List<SearchUserResponseDto> search(String name, String email){
+
         if(name != null && email != null){
             // name, email 동시 검색 비허용
+
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name, email 동시 검색은 허용되지 않습니다.");
+
         } else if(name != null){
             // name으로 유저 검색
+
             Users user = usersRepository.findByUserName(name)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + name));
+
             return List.of(new SearchUserResponseDto(user));
+
         } else if(email != null){
             // email로 유저 검색
+
             Users user = usersRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
             return List.of(new SearchUserResponseDto(user));
+
         } else {
             // param 입력되지 않으면 전체 유저 리스트 검색
+
             List<Users> usersList = usersRepository.findAll();
+
             return usersList.stream()
                     .map(SearchUserResponseDto::new)
                     .collect(Collectors.toList());
         }
     }
+
 
     @Override
     @Transactional

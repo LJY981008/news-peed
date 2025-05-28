@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class LoginUserResponseDto {
+
     private final Long id;
     private final String email;
     private final String userName;

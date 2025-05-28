@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface UsersService {
     SignupUserResponseDto signUp(SignupUserRequestDto signupRequest);
+
     LoginUserResponseDto logIn(LoginUserRequestDto loginRequest);
+
     List<SearchUserResponseDto> search(String name, String email);
 
     void updateUsersName(UpdateUserNameRequestDto updateRequest);
