@@ -25,7 +25,7 @@ public class UsersController {
      * @return SignupUserResponseDto
      * { id, email, password, userName, intro, profileImageUrl, createdAt, updatedAt }
      */
-    @PostMapping("/sign-up")
+    @PostMapping("/signup")
     public ResponseEntity<SignupUserResponseDto> signUp(@Valid @RequestBody SignupUserRequestDto signupRequest){
         SignupUserResponseDto signUpResponseDto = usersService.signUp(signupRequest);
         return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
@@ -38,7 +38,7 @@ public class UsersController {
      * @return LoginUserResponseDto
      * { id, email, userName, intro, profileImageUrl, createdAt, updatedAt }
      */
-    @GetMapping("/log-in")
+    @GetMapping("/login")
     public ResponseEntity<LoginUserResponseDto> logIn(@Valid @RequestBody LoginUserRequestDto loginRequest){
         LoginUserResponseDto loginResponseDto = usersService.logIn(loginRequest);
         return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
