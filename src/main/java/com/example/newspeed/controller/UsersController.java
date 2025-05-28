@@ -40,7 +40,7 @@ public class UsersController {
      * { id, email, userName, intro, profileImageUrl, createdAt, updatedAt }
      */
     @GetMapping("/log-in")
-    public ResponseEntity<LoginUserResponseDto> lonIn(@Valid @RequestBody LoginUserRequestDto loginRequest){
+    public ResponseEntity<LoginUserResponseDto> logIn(@Valid @RequestBody LoginUserRequestDto loginRequest){
         LoginUserResponseDto loginResponseDto = usersService.logIn(loginRequest);
         return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
     }
