@@ -1,22 +1,22 @@
-//package com.example.newspeed.service;
-//
-//import com.example.newspeed.dto.comment.*;
-//import com.example.newspeed.entity.Comment;
-//import com.example.newspeed.entity.Post;
-//import com.example.newspeed.repository.CommentRepository;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-//
-//import java.util.List;
-//import java.util.Optional;
-//
-///**
-// * 댓글 서비스
-// */
-////TODO 게시글 기능 작성되면 게시글 조회 레포지토리 변경 필요
-//@Service
-//public class CommentService {
-//
+package com.example.newspeed.service;
+
+import com.example.newspeed.dto.comment.*;
+import com.example.newspeed.entity.Comment;
+import com.example.newspeed.entity.Post;
+import com.example.newspeed.repository.CommentRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 댓글 서비스
+ */
+//TODO 게시글 기능 작성되면 게시글 조회 레포지토리 변경 필요
+@Service
+public class CommentService {
+
 //    private final CommentRepository commentRepository;
 //
 //    public CommentService(CommentRepository commentRepository) {
@@ -112,4 +112,4 @@
 //
 //        return responseDto;
 //    }
-//}
+}
