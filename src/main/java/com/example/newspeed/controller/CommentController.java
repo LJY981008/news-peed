@@ -1,16 +1,18 @@
 package com.example.newspeed.controller;
 
 import com.example.newspeed.dto.comment.*;
+import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/news-peed/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -24,14 +26,15 @@ public class CommentController {
      *
      * @param postId        댓글이 등록될 포스트의 ID
      * @param requestDto    {@link CommentCreateRequestDto} 요청 DTO
-     * @return {@link CommentCreateResponseDtoComment} 반환 DTO
+     * @return {@link CommentCreateResponseDto} 반환 DTO
      */
     @PostMapping
-    public ResponseEntity<CommentCreateResponseDtoComment> createComment(
+    public ResponseEntity<CommentCreateResponseDto> createComment(
             @RequestParam Long postId,
-            @Valid @RequestBody CommentCreateRequestDto requestDto
+            @Valid @RequestBody CommentCreateRequestDto requestDto,
+            @AuthenticationPrincipal AuthUserDto userDto
     ) {
-        CommentCreateResponseDtoComment responseComment = commentService.createComment(postId, requestDto);
+        CommentCreateResponseDto responseComment = commentService.createComment(postId, requestDto, userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseComment);
     }
 
@@ -39,30 +42,32 @@ public class CommentController {
      * 댓글 조회
      *
      * @param postId    댓글을 조회할 포스트의 ID
-     * @return {@link CommentFindResponseDtoComment} 반환 DTO 리스트
+     * @return {@link CommentFindResponseDto} 반환 DTO 리스트
      */
     @GetMapping
-    public ResponseEntity<List<CommentFindResponseDtoComment>> findCommentByPostId(
+    public ResponseEntity<List<CommentFindResponseDto>> findCommentByPostId(
             @RequestParam Long postId
     ) {
-        List<CommentFindResponseDtoComment> responseComments = commentService.findCommentByPostId(postId);
+        List<CommentFindResponseDto> responseComments = commentService.findCommentByPostId(postId);
         return ResponseEntity.status(HttpStatus.OK).body(responseComments);
     }
 
     @PatchMapping
-    public ResponseEntity<CommentUpdateResponseDtoComment> updateComment(
+    public ResponseEntity<CommentUpdateResponseDto> updateComment(
             @RequestParam Long commentId,
-            @Valid @RequestParam CommentUpdateRequestDto requestDto
+            @Valid @RequestBody CommentUpdateRequestDto requestDto,
+            @AuthenticationPrincipal AuthUserDto userDto
     ) {
-        CommentUpdateResponseDtoComment responseComment = commentService.updateComment(commentId, requestDto);
+        CommentUpdateResponseDto responseComment = commentService.updateComment(commentId, requestDto, userDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
 
     @DeleteMapping
-    public ResponseEntity<CommentRemoveResponseDtoComment> deleteComment(
-            @RequestParam Long commentId
+    public ResponseEntity<CommentRemoveResponseDto> deleteComment(
+            @RequestParam Long commentId,
+            @AuthenticationPrincipal AuthUserDto userDto
     ){
-        CommentRemoveResponseDtoComment responseComment = commentService.deleteComment(commentId);
+        CommentRemoveResponseDto responseComment = commentService.deleteComment(commentId, userDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
 }

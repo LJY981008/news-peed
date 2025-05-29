@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "posts")
 public class Post extends TimeStampEntity{
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
