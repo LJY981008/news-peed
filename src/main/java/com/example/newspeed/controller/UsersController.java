@@ -49,7 +49,9 @@ public class UsersController {
      */
     @PostMapping("/signup")
     public ResponseEntity<SignupUserResponseDto> signUp(@Valid @RequestBody SignupUserRequestDto signupRequest){
+
         SignupUserResponseDto signUpResponseDto = usersService.signUp(signupRequest);
+
         return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
 
     }
