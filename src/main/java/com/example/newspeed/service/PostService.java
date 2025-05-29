@@ -3,8 +3,10 @@ package com.example.newspeed.service;
 
 import com.example.newspeed.dto.post.*;
 
+import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.Users;
+import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UsersRepository;
@@ -44,13 +46,22 @@ public class PostService {
     }
 
     // 게시글 삭제
-
-    public DeletePostResponseDto deletePost(Long postId) {
+    public DeletePostResponseDto deletePost(Long postId, AuthUserDto authUserDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 게시글이 없습니다."));
-//        jwt토큰이 일치하지 않는다면 Autheorization처리
-        postRepository.delete(post);
+        Long loginUserId = authUserDto.getId();
+        UserRole loginUserRole = authUserDto.getUserRole();
 
-        return new DeletePostResponseDto();
+        if ( loginUserRole == UserRole.ADMIN ) {
+            postRepository.delete(post);
+            return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.");
+        }
+        else if (!post.getUsers().getUserId().equals(loginUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다");
+        }
+        else {
+            postRepository.delete(post);
+            return new DeletePostResponseDto("정상적으로 삭제되었습니다.");
+        }
     }
 
     // 게시글 수정
