@@ -1,6 +1,5 @@
 package com.example.newspeed.controller;
 
-import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.comment.*;
 import com.example.newspeed.service.CommentService;
 import jakarta.validation.Valid;
@@ -25,14 +24,14 @@ public class CommentController {
      *
      * @param postId        댓글이 등록될 포스트의 ID
      * @param requestDto    {@link CommentCreateRequestDto} 요청 DTO
-     * @return {@link CommentCreateResponseDto} 반환 DTO
+     * @return {@link CommentCreateResponseDtoComment} 반환 DTO
      */
     @PostMapping
-    public ResponseEntity<CommentCreateResponseDto> createComment(
+    public ResponseEntity<CommentCreateResponseDtoComment> createComment(
             @RequestParam Long postId,
             @Valid @RequestBody CommentCreateRequestDto requestDto
     ) {
-        CommentCreateResponseDto responseComment = commentService.createComment(postId, requestDto);
+        CommentCreateResponseDtoComment responseComment = commentService.createComment(postId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseComment);
     }
 
@@ -40,30 +39,30 @@ public class CommentController {
      * 댓글 조회
      *
      * @param postId    댓글을 조회할 포스트의 ID
-     * @return {@link CommentFindResponseDto} 반환 DTO 리스트
+     * @return {@link CommentFindResponseDtoComment} 반환 DTO 리스트
      */
     @GetMapping
-    public ResponseEntity<List<CommentFindResponseDto>> findCommentByPostId(
+    public ResponseEntity<List<CommentFindResponseDtoComment>> findCommentByPostId(
             @RequestParam Long postId
     ) {
-        List<CommentFindResponseDto> responseComments = commentService.findCommentByPostId(postId);
+        List<CommentFindResponseDtoComment> responseComments = commentService.findCommentByPostId(postId);
         return ResponseEntity.status(HttpStatus.OK).body(responseComments);
     }
 
     @PatchMapping
-    public ResponseEntity<CommentUpdateResponseDto> updateComment(
+    public ResponseEntity<CommentUpdateResponseDtoComment> updateComment(
             @RequestParam Long commentId,
             @Valid @RequestParam CommentUpdateRequestDto requestDto
     ) {
-        CommentUpdateResponseDto responseComment = commentService.updateComment(commentId, requestDto);
+        CommentUpdateResponseDtoComment responseComment = commentService.updateComment(commentId, requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
 
     @DeleteMapping
-    public ResponseEntity<CommentRemoveResponseDto> deleteComment(
+    public ResponseEntity<CommentRemoveResponseDtoComment> deleteComment(
             @RequestParam Long commentId
     ){
-        CommentRemoveResponseDto responseComment = commentService.deleteComment(commentId);
+        CommentRemoveResponseDtoComment responseComment = commentService.deleteComment(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
 }
