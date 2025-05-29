@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,16 +23,12 @@ public class FollowController {
 
     //이메일로 유저 검색해 팔로우
     @PostMapping
-    public ResponseEntity<String> followUser(@Valid @RequestBody FollowRequestDto followRequest){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if(authentication == null || !(authentication.getPrincipal() instanceof AuthUserDto)){
+    public ResponseEntity<String> followUser(@AuthenticationPrincipal AuthUserDto userDto, @Valid @RequestBody FollowRequestDto followRequest){
+        if(userDto == null){
             throw new AuthenticationException("인증되지 않은 사용자입니다.");
         }
 
-        AuthUserDto authUser = (AuthUserDto) authentication.getPrincipal();
-        Long currentUserId = authUser.getId();
-
+        Long currentUserId = userDto.getId();
         followService.follow(currentUserId, followRequest.getTargetEmail());
         return ResponseEntity.ok("success");
     }
