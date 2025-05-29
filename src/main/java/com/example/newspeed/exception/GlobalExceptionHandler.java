@@ -48,4 +48,6 @@ public class GlobalExceptionHandler {
         Map<String, Object> errors = Map.of("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
     }
+
+
 }
