@@ -1,11 +1,8 @@
 package com.example.newspeed.service;
 
 
-import com.example.newspeed.dto.post.FindPostResponseDto;
-import com.example.newspeed.dto.post.CreatePostResponseDto;
-import com.example.newspeed.dto.post.DeletePostResponseDto;
-import com.example.newspeed.dto.post.FindPostResponseDto;
-import com.example.newspeed.dto.post.UpdatePostRequestDto;
+import com.example.newspeed.dto.post.*;
+
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.Users;
 import com.example.newspeed.exception.exceptions.NotFoundException;
