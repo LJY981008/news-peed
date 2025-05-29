@@ -1,6 +1,6 @@
 package com.example.newspeed.service;
 
-import com.example.newspeed.dto.AuthUserDto;
+import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.dto.comment.*;
 import com.example.newspeed.entity.Comment;
 import com.example.newspeed.entity.Post;

@@ -1,9 +1,10 @@
-package com.example.newspeed.dto;
+package com.example.newspeed.dto.user;
 
 import lombok.Getter;
 
 @Getter
 public class SignupUserRequestDto {
+
     private String email;
     private String password;
     private String userName;
