@@ -1,4 +1,4 @@
-package com.example.newspeed.dto.Post;
+package com.example.newspeed.dto.post;
 
 import com.example.newspeed.entity.Post;
 import lombok.AllArgsConstructor;

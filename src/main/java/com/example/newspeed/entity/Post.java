@@ -1,6 +1,6 @@
 package com.example.newspeed.entity;
 
-import com.example.newspeed.dto.Post.UpdatePostRequestDto;
+import com.example.newspeed.dto.post.UpdatePostRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -18,9 +18,9 @@ public class Post extends TimeStampEntity{
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
 
-//    public void setUsers(Users users) {
-//        this.users = users;
-//    }
+    public void setUsers(Users users) {
+        this.users = users;
+    }
 
     @Id
     @Column(name = "post_id")
@@ -33,10 +33,10 @@ public class Post extends TimeStampEntity{
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private Long userLikeCount;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private boolean isUserLiked;
     private String imageUrl;
 

@@ -1,11 +1,7 @@
 package com.example.newspeed.controller;
 
 
-import com.example.newspeed.dto.Post.FindPostResponseDto;
-import com.example.newspeed.dto.post.CreatePostRequestDto;
-import com.example.newspeed.dto.post.CreatePostResponseDto;
-import com.example.newspeed.dto.post.DeletePostResponseDto;
-import com.example.newspeed.dto.Post.UpdatePostRequestDto;
+import com.example.newspeed.dto.post.*;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -65,15 +61,15 @@ public class PostController {
     }
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<DeletePostResponseDto> deletePost(@RequestParam Long postId) {
+    public ResponseEntity<DeletePostResponseDto> deletePost(@PathVariable Long postId) {
         DeletePostResponseDto deletePost = postService.deletePost(postId);
 
         return ResponseEntity.status(200).body(deletePost);
     }
 
     // 게시글 수정
-    @PatchMapping("/post-update")
-    public ResponseEntity<FindPostResponseDto> updatePost(@RequestParam Long postId, @RequestBody UpdatePostRequestDto updateDto) {
+    @PatchMapping("/post-update/{postId}")
+    public ResponseEntity<FindPostResponseDto> updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequestDto updateDto) {
        FindPostResponseDto findPostResponseDto = postService.updatePost(postId, updateDto);
        return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
     }
