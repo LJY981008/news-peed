@@ -41,11 +41,11 @@ public class Post extends TimeStampEntity{
     private String imageUrl;
 
     // Post생성자
-    public Post(String title, String content, String imageUrl, User users) {
+    public Post(String title, String content, String imageUrl, User user) {
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
-        this.user = users;
+        this.user = user;
     }
 
     public Post() {

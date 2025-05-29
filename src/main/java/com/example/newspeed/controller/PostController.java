@@ -10,11 +10,16 @@ import com.example.newspeed.dto.post.*;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+//import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -46,9 +51,12 @@ public class PostController {
 
 
     //게시글 전체조회
+    // createdAt 기준으로 정렬
     @GetMapping("/find-all")
-    public ResponseEntity<List<FindPostResponseDto>> findPost() {
-        List<FindPostResponseDto> findPostResponseDtoList = postService.findPost();
+    public ResponseEntity<Page<FindPostResponseDto>> findPost(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        Page<FindPostResponseDto> findPostResponseDtoList = postService.findPost(pageable);
         return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
     }
 

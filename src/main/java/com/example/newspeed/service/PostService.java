@@ -12,6 +12,8 @@ import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,8 +30,8 @@ public class PostService {
     private final UserRepository usersRepository;
 
     // 게시글 전체
-    public List<FindPostResponseDto> findPost(){
-        return postRepository.findAll().stream().map(FindPostResponseDto::findPostDto).toList();
+    public Page<FindPostResponseDto> findPost(Pageable pageable){
+        return postRepository.findAll(pageable).map(FindPostResponseDto::findPostDto);
     }
 
     // 게시글 단건 조회
