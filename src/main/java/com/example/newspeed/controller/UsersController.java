@@ -1,6 +1,8 @@
 package com.example.newspeed.controller;
 
+import com.example.newspeed.config.JwtUtil;
 import com.example.newspeed.dto.user.*;
+import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.service.UsersService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.List;
 @RequestMapping("/news-peed/users")
 public class UsersController {
     private final UsersService usersService;
+    private final JwtUtil jwtUtil;
 
 
     /* 토큰 설명
@@ -48,19 +51,27 @@ public class UsersController {
     public ResponseEntity<SignupUserResponseDto> signUp(@Valid @RequestBody SignupUserRequestDto signupRequest){
         SignupUserResponseDto signUpResponseDto = usersService.signUp(signupRequest);
         return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
+
     }
 
     /**
      * 로그인
      * @param loginRequest
      * { email, password }
-     * @return LoginUserResponseDto
+     * @return LoginUserResponseDto, token
      * { id, email, userName, intro, profileImageUrl, createdAt, updatedAt }
      */
     @GetMapping("/login")
     public ResponseEntity<LoginUserResponseDto> logIn(@Valid @RequestBody LoginUserRequestDto loginRequest){
+
         LoginUserResponseDto loginResponseDto = usersService.logIn(loginRequest);
-        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
+
+        // 유저 email 기준으로 토큰 부여
+        String token = jwtUtil.createToken(loginResponseDto.getId(), loginResponseDto.getEmail(), UserRole.USER);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("Authorization", token)
+                .body(loginResponseDto);
     }
 
     /**

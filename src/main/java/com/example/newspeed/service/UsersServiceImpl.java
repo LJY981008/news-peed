@@ -23,11 +23,9 @@ public class UsersServiceImpl implements UsersService{
     @Override
     @Transactional
     public SignupUserResponseDto signUp(SignupUserRequestDto signupRequest){
-<<<<<<< Updated upstream
+
         // 비밀번호 encoding
         final String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
-=======
->>>>>>> Stashed changes
 
         Users user = new Users(
                 signupRequest.getEmail(), encodedPassword, signupRequest.getUserName(),
