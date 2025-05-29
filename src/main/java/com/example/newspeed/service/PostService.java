@@ -24,8 +24,6 @@ public class PostService {
 
     // 게시글 전체
     public List<FindPostResponseDto> findPost(){
-        List<Post> post = postRepository.findAll();
-
         return postRepository.findAll().stream().map(FindPostResponseDto::findPostDto).toList();
     }
 
