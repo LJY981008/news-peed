@@ -48,10 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/news-peed/users/signup").permitAll() // 회원가입: 모두 허용
                         .requestMatchers(HttpMethod.GET, "/news-peed/users/login").permitAll()   // 로그인: 모두 허용
                         .requestMatchers(HttpMethod.GET, "/news-peed/users/search").hasRole("USER") // 유저 검색: USER만
-                        .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify-name").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify-password").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify-intro").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify-image").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify").hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, "/news-peed/users/quit").hasRole("USER")
                 )
                 .authorizeHttpRequests(auth -> auth
