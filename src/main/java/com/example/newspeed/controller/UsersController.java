@@ -1,28 +1,23 @@
 package com.example.newspeed.controller;
 
 import com.example.newspeed.config.JwtUtil;
-import com.example.newspeed.dto.*;
+import com.example.newspeed.dto.user.*;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.service.UsersService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/news-peed/users")
+@RequestMapping("/users")
 public class UsersController {
     private final UsersService usersService;
+    private final JwtUtil jwtUtil;
 
 
     /* 토큰 설명
@@ -54,21 +49,31 @@ public class UsersController {
      */
     @PostMapping("/signup")
     public ResponseEntity<SignupUserResponseDto> signUp(@Valid @RequestBody SignupUserRequestDto signupRequest){
+
         SignupUserResponseDto signUpResponseDto = usersService.signUp(signupRequest);
+
         return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
+
     }
 
     /**
      * 로그인
      * @param loginRequest
      * { email, password }
-     * @return LoginUserResponseDto
+     * @return LoginUserResponseDto, token
      * { id, email, userName, intro, profileImageUrl, createdAt, updatedAt }
      */
     @GetMapping("/login")
     public ResponseEntity<LoginUserResponseDto> logIn(@Valid @RequestBody LoginUserRequestDto loginRequest){
+
         LoginUserResponseDto loginResponseDto = usersService.logIn(loginRequest);
-        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
+
+        // 유저 email 기준으로 토큰 부여
+        String token = jwtUtil.createToken(loginResponseDto.getId(), loginResponseDto.getEmail(), UserRole.USER);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("Authorization", token)
+                .body(loginResponseDto);
     }
 
     /**
@@ -80,7 +85,7 @@ public class UsersController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<SearchUserResponseDto>> search(@RequestParam(required = false) String name,
-                                                        @RequestParam(required = false) String email){
+                                                              @RequestParam(required = false) String email){
         List<SearchUserResponseDto> searchResponseList = usersService.search(name, email);
 
         return new ResponseEntity<>(searchResponseList, HttpStatus.OK);

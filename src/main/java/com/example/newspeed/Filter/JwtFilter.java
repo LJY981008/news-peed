@@ -1,7 +1,7 @@
 package com.example.newspeed.Filter;
 
 import com.example.newspeed.config.JwtUtil;
-import com.example.newspeed.dto.AuthUserDto;
+import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -43,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwt = jwtUtil.substringToken(bearerJwt);
 
         try {
+            // JWT 유효성 검사와 claims 추출
             Claims claims = jwtUtil.extractClaims(jwt);
             if (claims == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");

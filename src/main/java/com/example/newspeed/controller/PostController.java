@@ -6,6 +6,7 @@ import com.example.newspeed.dto.Post.FindPostResponseDto;
 import com.example.newspeed.dto.post.CreatePostRequestDto;
 import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
+import com.example.newspeed.dto.post.*;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -52,8 +53,8 @@ public class PostController {
 
     // 게시글 단건 조회
     @GetMapping
-    public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam Long userId) {
-        FindPostResponseDto findDto = postService.findById(userId);
+    public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam Long postId) {
+        FindPostResponseDto findDto = postService.findById(postId);
         return new ResponseEntity<>(findDto, HttpStatus.OK);
 
     }
@@ -72,5 +73,12 @@ public class PostController {
         DeletePostResponseDto deletePost = postService.deletePost(postId);
 
         return ResponseEntity.status(200).body(deletePost);
+    }
+
+    // 게시글 수정
+    @PatchMapping("/post-update/{postId}")
+    public ResponseEntity<FindPostResponseDto> updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequestDto updateDto) {
+       FindPostResponseDto findPostResponseDto = postService.updatePost(postId, updateDto);
+       return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
     }
 }

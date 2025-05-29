@@ -1,10 +1,11 @@
-package com.example.newspeed.dto;
+package com.example.newspeed.dto.user;
 
 import com.example.newspeed.entity.Users;
 import lombok.Getter;
 
 @Getter
 public class SearchUserResponseDto {
+
     private final Long id;
     private final String email;
     private final String userName;
