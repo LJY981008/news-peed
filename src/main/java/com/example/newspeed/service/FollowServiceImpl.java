@@ -7,7 +7,6 @@ import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.FollowRepository;
 import com.example.newspeed.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.hibernate.annotations.NotFound;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,7 @@ public class FollowServiceImpl implements FollowService{
         if(currentUserId.equals(followedUserId)) throw new InvalidRequestException("자기 자신은 팔로우할 수 없습니다.");
         //팔로우 여부 검색
         boolean alreadyFollowing = followRepository
-                .existsByFollowingUserIdAndFollowId(currentUserId, followedUserId);
+                .existsByFollowingUserIdAndFollowedUserId(currentUserId, followedUserId);
         //팔로우 된 유저를 다시 팔로우 하는 경우 예외처리
         if(alreadyFollowing) throw new InvalidRequestException("이미 팔로우한 사용자입니다.");
 
@@ -37,7 +36,7 @@ public class FollowServiceImpl implements FollowService{
     @Override
     @Transactional
     public void unfollow(Long currentUserId, String targetEmail){
-        Users targetUser = usersRepository.findByEmail(targetEmail)
+        User targetUser = usersRepository.findByEmail(targetEmail)
                 .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
         //팔로우 하지 않은 관계에서 삭제 요청 시 예외처리
         boolean exists = followRepository.existsByFollowingUserIdAndFollowedUserId(currentUserId, targetUser.getUserId());
