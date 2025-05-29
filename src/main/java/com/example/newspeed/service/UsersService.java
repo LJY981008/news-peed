@@ -12,13 +12,7 @@ public interface UsersService {
 
     List<SearchUserResponseDto> search(String name, String email);
 
-    void updateUsersName(UpdateUserNameRequestDto updateRequest);
-
-    void updatePassword(UpdatePasswordRequestDto updateRequest);
-
-    void updateIntro(UpdateIntroRequestDto updateRequest);
-
-    void updateImage(UpdateImageRequestDto updateRequest);
+    void updateUserProfile(UpdateUserProfileRequestDto updateRequest);
 
     void deleteUser(DeleteUsersRequestDto deleteRequest);
 }

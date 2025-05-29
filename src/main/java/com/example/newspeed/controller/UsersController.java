@@ -92,29 +92,12 @@ public class UsersController {
     }
 
 
-    @PutMapping("/modify-name")
-    public ResponseEntity<String> modifyName(@Valid @RequestBody UpdateUserNameRequestDto updateRequest){
-        usersService.updateUsersName(updateRequest);
+    @PutMapping("/modify")
+    public ResponseEntity<String> modifyUserProfile(@Valid @RequestBody UpdateUserProfileRequestDto updateRequest){
+        usersService.updateUserProfile(updateRequest);
         return ResponseEntity.ok("success");
     }
 
-    @PutMapping("/modify-password")
-    public ResponseEntity<String> modifyPassword(@Valid @RequestBody UpdatePasswordRequestDto updateRequest){
-        usersService.updatePassword(updateRequest);
-        return ResponseEntity.ok("success");
-    }
-
-    @PutMapping("/modify-intro")
-    public ResponseEntity<String> modifyIntro(@Valid @RequestBody UpdateIntroRequestDto updateRequest){
-        usersService.updateIntro(updateRequest);
-        return ResponseEntity.ok("success");
-    }
-
-    @PutMapping("/modify-image")
-    public ResponseEntity<String> modiyImage(@Valid @RequestBody UpdateImageRequestDto updateRequest){
-        usersService.updateImage(updateRequest);
-        return ResponseEntity.ok("success");
-    }
 
     @DeleteMapping("/quit")
     public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUsersRequestDto deleteRequest){

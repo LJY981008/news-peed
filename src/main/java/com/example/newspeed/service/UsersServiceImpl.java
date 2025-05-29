@@ -88,34 +88,21 @@ public class UsersServiceImpl implements UsersService{
 
     @Override
     @Transactional
-    public void updateUsersName(UpdateUserNameRequestDto updateRequest) {
+    public void updateUserProfile(UpdateUserProfileRequestDto updateRequest){ //profile 수정 통합 - password 암호화 미구현 상태
         Users user = usersRepository.findByEmail(updateRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
-        user.setUserName(updateRequest.getUserName());
-    }
-
-    @Override
-    @Transactional
-    public void updatePassword(UpdatePasswordRequestDto updateRequest){
-        Users user = usersRepository.findByEmail(updateRequest.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
-        user.setPassword(updateRequest.getNewPassword());
-    }
-
-    @Override
-    @Transactional
-    public void updateIntro(UpdateIntroRequestDto updateRequest) {
-        Users user = usersRepository.findByEmail(updateRequest.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
-        user.setIntro(updateRequest.getIntro());
-    }
-
-    @Override
-    @Transactional
-    public void updateImage(UpdateImageRequestDto updateRequest) {
-        Users user = usersRepository.findByEmail(updateRequest.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
-        user.setProfileImageUrl(updateRequest.getProfileImage());
+        if(updateRequest.getUserName() != null){
+            user.setUserName(updateRequest.getUserName());
+        }
+        if(updateRequest.getIntro() != null){
+            user.setIntro(updateRequest.getIntro());
+        }
+        if(updateRequest.getProfileImage() != null){
+            user.setProfileImageUrl(updateRequest.getProfileImage());
+        }
+        if(updateRequest.getPassword() != null && updateRequest.getNewPassword() != null){
+            user.setPassword(updateRequest.getNewPassword());
+        }
     }
 
     @Override
