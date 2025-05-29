@@ -1,5 +1,6 @@
 package com.example.newspeed.entity;
 
+import com.example.newspeed.dto.Post.UpdatePostRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -44,5 +45,14 @@ public class Post extends TimeStampEntity{
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
+    }
+
+    public Post() {
+
+    }
+
+    public void updatePost(UpdatePostRequestDto updateDto) {
+        this.title = updateDto.getTitle();
+        this.content = updateDto.getContents();
     }
 }
