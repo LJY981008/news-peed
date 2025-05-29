@@ -2,6 +2,7 @@ package com.example.newspeed.service;
 
 import com.example.newspeed.dto.user.*;
 import com.example.newspeed.entity.User;
+import com.example.newspeed.exception.exceptions.DuplicateEmailException;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.PasswordEncoder;
 import lombok.AllArgsConstructor;
@@ -18,11 +19,17 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
 
     @Override
     @Transactional
     public SignupUserResponseDto signUp(SignupUserRequestDto signupRequest){
+
+        // 중복된 이메일로 가입 시 에러 반환
+        if(userRepository.existsByEmail(signupRequest.getEmail())){
+            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+        }
 
         // 비밀번호 encoding
         final String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
