@@ -1,7 +1,7 @@
 package com.example.newspeed.Filter;
 
 import com.example.newspeed.config.JwtUtil;
-import com.example.newspeed.dto.AuthUserDto;
+import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
