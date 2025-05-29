@@ -6,6 +6,7 @@ import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.Post;
+import com.example.newspeed.entity.Users;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UsersRepository;
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UsersRepository usersRepository;
 
     // 게시글 전체
     public List<FindPostResponseDto> findPost(){
@@ -35,8 +37,9 @@ public class PostService {
         return new FindPostResponseDto(findPost);
     }
     // 게시글 생성
-    public CreatePostResponseDto createPost(String title, String content, String imageUrl) {
-        Post post = new Post(title, content, imageUrl);
+    public CreatePostResponseDto createPost(String title, String content, String imageUrl, Long userId) {
+        Users user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("없음"));
+        Post post = new Post(title, content, imageUrl, user);
         postRepository.save(post);
         return new CreatePostResponseDto();
     }
@@ -49,4 +52,5 @@ public class PostService {
 
         return new DeletePostResponseDto();
     }
+
 }
