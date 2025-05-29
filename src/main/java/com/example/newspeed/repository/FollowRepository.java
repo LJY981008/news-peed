@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface FollowRepository extends JpaRepository<Follow, Long> {
     List<Follow> findAllByFollowingUserId(Long followingUserId);
-    List<Follow> findAllByFollowedId(Long followedId);
+    List<Follow> findAllByFollowedUserId(Long followedUserId);
     Long countByFollowingUserId(Long followingUserId);
-    Long countByFollowedId(Long followedId);
-    boolean existsByFollowingUserIdAndFollowedId(Long followingUserId, Long followedUserId);
-    void deleteByFollowingUserIdAndFollowedId(Long followingUserId, Long followedUserId);
+    Long countByFollowedUserId(Long followedUserId);
+    boolean existsByFollowingUserIdAndFollowedUserId(Long followingUserId, Long followedUserId);
+    void deleteByFollowingUserIdAndFollowedUserId(Long followingUserId, Long followedUserId);
 }
