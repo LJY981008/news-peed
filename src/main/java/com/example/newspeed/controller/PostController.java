@@ -1,6 +1,7 @@
 package com.example.newspeed.controller;
 
 
+import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.dto.post.FindPostResponseDto;
 import com.example.newspeed.dto.post.CreatePostRequestDto;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/news-peed/post")
+@RequestMapping(Const.POST_URL)
 @RequiredArgsConstructor
 public class PostController {
 

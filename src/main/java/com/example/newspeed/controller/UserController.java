@@ -1,6 +1,7 @@
 package com.example.newspeed.controller;
 
 import com.example.newspeed.config.JwtUtil;
+import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.user.*;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.service.UserService;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/news-peed/users")
+@RequestMapping(Const.USER_URL)
 public class UserController {
     private final UserService usersService;
     private final JwtUtil jwtUtil;
