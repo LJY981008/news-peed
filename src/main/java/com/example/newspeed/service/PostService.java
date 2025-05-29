@@ -8,6 +8,7 @@ import com.example.newspeed.entity.Users;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UsersRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,7 @@ public class PostService {
     }
 
     // 게시글 삭제
+
     public DeletePostResponseDto deletePost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 게시글이 없습니다."));
 //        jwt토큰이 일치하지 않는다면 Autheorization처리
@@ -52,6 +54,7 @@ public class PostService {
     }
 
     // 게시글 수정
+    @Transactional
     public FindPostResponseDto updatePost(Long postId, UpdatePostRequestDto updateDto) {
         Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("없음"));
         findPost.updatePost(updateDto);
