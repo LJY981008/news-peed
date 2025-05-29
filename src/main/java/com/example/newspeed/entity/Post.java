@@ -37,4 +37,12 @@ public class Post extends TimeStampEntity{
 
     @Column(nullable = false)
     private boolean isUserLiked;
+    private String imageUrl;
+
+    // Post생성자
+    public Post(String title, String content, String imageUrl) {
+        this.title = title;
+        this.content = content;
+        this.imageUrl = imageUrl;
+    }
 }
