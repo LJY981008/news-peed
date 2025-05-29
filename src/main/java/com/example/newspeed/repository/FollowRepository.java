@@ -5,15 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FollowRepository extends JpaRepository<Follow, Long> {
     List<Follow> findAllByFollowingUserId(Long followingUserId);
 
-    List<Follow> findAllByFollowId(Long followedId);
+    List<Follow> findAllByFollowedUserId(Long followedUserId);
     Long countByFollowingUserId(Long followingUserId);
-    Long countByFollowId(Long followedId);
-    boolean existsByFollowingUserIdAndFollowId(Long followingUserId, Long followedUserId);
-    void deleteByFollowingUserIdAndFollowId(Long followingUserId, Long followedUserId);
-
+    Long countByFollowedUserId(Long followedUserId);
+    boolean existsByFollowingUserIdAndFollowedUserId(Long followingUserId, Long followedUserId);
+    void deleteByFollowingUserIdAndFollowedUserId(Long followingUserId, Long followedUserId);
 }
