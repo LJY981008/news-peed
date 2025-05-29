@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 @Getter
-public class DeleteUsersRequestDto {
+public class DeleteUserRequestDto {
     @NotBlank(message = "이메일은 필수 입력사항입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
     private String email;

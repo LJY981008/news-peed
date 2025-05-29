@@ -3,7 +3,7 @@ package com.example.newspeed.controller;
 import com.example.newspeed.config.JwtUtil;
 import com.example.newspeed.dto.user.*;
 import com.example.newspeed.enums.UserRole;
-import com.example.newspeed.service.UsersService;
+import com.example.newspeed.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +15,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/news-peed/users")
-public class UsersController {
-    private final UsersService usersService;
+public class UserController {
+    private final UserService usersService;
     private final JwtUtil jwtUtil;
 
 
@@ -100,7 +100,7 @@ public class UsersController {
 
 
     @DeleteMapping("/quit")
-    public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUsersRequestDto deleteRequest){
+    public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUserRequestDto deleteRequest){
         usersService.deleteUser(deleteRequest);
         return ResponseEntity.ok("success");
     }

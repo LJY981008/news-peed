@@ -2,7 +2,7 @@ package com.example.newspeed.service;
 
 import com.example.newspeed.dto.user.*;
 import com.example.newspeed.entity.User;
-import com.example.newspeed.repository.UsersRepository;
+import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.PasswordEncoder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UsersServiceImpl implements UsersService{
-    private final UsersRepository usersRepository;
+public class UserServiceImpl implements UserService {
+    private final UserRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -107,7 +107,7 @@ public class UsersServiceImpl implements UsersService{
 
     @Override
     @Transactional
-    public void deleteUser(DeleteUsersRequestDto deleteRequest) {
+    public void deleteUser(DeleteUserRequestDto deleteRequest) {
         User user = usersRepository.findByEmail(deleteRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
         usersRepository.delete(user); //Bcrypt 암호화 미적용 상태 - 우선 어떤 비밀번호든 상관없이 삭제 요청시 삭제(암호화 적용 시 구현 예정)

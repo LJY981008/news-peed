@@ -9,7 +9,7 @@ import com.example.newspeed.exception.exceptions.AuthenticationException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.CommentRepository;
 import com.example.newspeed.repository.PostRepository;
-import com.example.newspeed.repository.UsersRepository;
+import com.example.newspeed.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,10 +28,10 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final UsersRepository userRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository, UsersRepository userRepository, ModelMapper modelMapper) {
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository, UserRepository userRepository, ModelMapper modelMapper) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
