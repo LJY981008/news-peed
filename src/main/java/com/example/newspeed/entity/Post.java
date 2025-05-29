@@ -13,13 +13,13 @@ public class Post extends TimeStampEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users users;
+    private User user;
 
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
 
-//    public void setUsers(Users users) {
-//        this.users = users;
+//    public void setUsers(User user) {
+//        this.user = user;
 //    }
 
     @Id

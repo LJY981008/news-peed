@@ -5,7 +5,7 @@ import com.example.newspeed.dto.user.*;
 import java.util.List;
 
 
-public interface UsersService {
+public interface UserService {
     SignupUserResponseDto signUp(SignupUserRequestDto signupRequest);
 
     LoginUserResponseDto logIn(LoginUserRequestDto loginRequest);
@@ -14,5 +14,5 @@ public interface UsersService {
 
     void updateUserProfile(UpdateUserProfileRequestDto updateRequest);
 
-    void deleteUser(DeleteUsersRequestDto deleteRequest);
+    void deleteUser(DeleteUserRequestDto deleteRequest);
 }

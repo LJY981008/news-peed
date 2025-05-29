@@ -1,6 +1,6 @@
 package com.example.newspeed.dto.user;
 
-import com.example.newspeed.entity.Users;
+import com.example.newspeed.entity.User;
 import lombok.Getter;
 
 @Getter
@@ -12,7 +12,7 @@ public class SearchUserResponseDto {
     private final String intro;
     private final String profileImageUrl;
 
-    public SearchUserResponseDto(Users user){
+    public SearchUserResponseDto(User user){
         this.id = user.getUserId();
         this.email = user.getEmail();
         this.userName = user.getUserName();

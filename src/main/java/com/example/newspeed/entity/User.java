@@ -14,26 +14,34 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "users")
-public class Users extends TimeStampEntity{
+public class User extends TimeStampEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
+
     @Email
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
     private String userName;
+
     private String intro;
+
     private String profileImageUrl;
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "user")
     private List<Post> posts;
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
 
-    public Users(String email, String password, String userName, String intro, String profileImageUrl){
+    public User(String email, String password, String userName, String intro, String profileImageUrl){
         this.email = email;
         this.password = password;
         this.userName = userName;

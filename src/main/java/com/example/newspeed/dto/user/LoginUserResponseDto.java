@@ -1,6 +1,6 @@
 package com.example.newspeed.dto.user;
 
-import com.example.newspeed.entity.Users;
+import com.example.newspeed.entity.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ public class LoginUserResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public LoginUserResponseDto(Users user){
+    public LoginUserResponseDto(User user){
         this.id = user.getUserId();
         this.email = user.getEmail();
         this.userName = user.getUserName();

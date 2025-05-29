@@ -1,7 +1,6 @@
 package com.example.newspeed.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -23,12 +22,12 @@ public class Comment extends TimeStampEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     public Comment() {
     }
 
-    public Comment(String content, Post post, Users user) {
+    public Comment(String content, Post post, User user) {
         this.content = content;
         this.post = post;
         this.user = user;
