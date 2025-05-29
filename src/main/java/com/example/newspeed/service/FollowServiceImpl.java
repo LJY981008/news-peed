@@ -1,11 +1,11 @@
 package com.example.newspeed.service;
 
 import com.example.newspeed.entity.Follow;
-import com.example.newspeed.entity.Users;
+import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.InvalidRequestException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.FollowRepository;
-import com.example.newspeed.repository.UsersRepository;
+import com.example.newspeed.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class FollowServiceImpl implements FollowService{
     private final FollowRepository followRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository usersRepository;
     @Override
     @Transactional
     public void follow(Long currentUserId, String targetEmail) {
-        Users targetUser = usersRepository.findByEmail(targetEmail)
+        User targetUser = usersRepository.findByEmail(targetEmail)
                 .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
         Long followedUserId = targetUser.getUserId();
         //팔로우 하려는 유저와 사용자가 동일 계정일 경우 예외처리
