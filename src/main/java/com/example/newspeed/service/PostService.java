@@ -5,11 +5,11 @@ import com.example.newspeed.dto.post.*;
 
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.entity.Post;
-import com.example.newspeed.entity.Users;
+import com.example.newspeed.entity.User;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.PostRepository;
-import com.example.newspeed.repository.UsersRepository;
+import com.example.newspeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository usersRepository;
 
     // 게시글 전체
     public List<FindPostResponseDto> findPost(){
@@ -39,7 +39,7 @@ public class PostService {
     }
     // 게시글 생성
     public CreatePostResponseDto createPost(String title, String content, String imageUrl, Long userId) {
-        Users user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("없음"));
+        User user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("없음"));
         Post post = new Post(title, content, imageUrl, user);
         postRepository.save(post);
         return new CreatePostResponseDto();
@@ -55,7 +55,7 @@ public class PostService {
             postRepository.delete(post);
             return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.");
         }
-        else if (!post.getUsers().getUserId().equals(loginUserId)) {
+        else if (!post.getUser().getUserId().equals(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다");
         }
         else {
