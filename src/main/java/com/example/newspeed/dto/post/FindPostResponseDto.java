@@ -20,10 +20,10 @@ public class FindPostResponseDto {
 
     public FindPostResponseDto(Post post) {
         this.userId = post.getPostId();
-        this.userName = post.getUsers().getUserName();
+        this.userName = post.getUser().getUserName();
         this.title = post.getTitle();
         this.contents = post.getContent();
-        this.postImgUrl = post.getUsers().getProfileImageUrl();
+        this.postImgUrl = post.getUser().getProfileImageUrl();
         this.userLikeCount = post.getUserLikeCount();
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
@@ -32,10 +32,10 @@ public class FindPostResponseDto {
     public static FindPostResponseDto findPostDto(Post post) {
         return new FindPostResponseDto(
                 post.getPostId(),
-                post.getUsers().getUserName(),
+                post.getUser().getUserName(),
                 post.getTitle(),
                 post.getContent(),
-                post.getUsers().getProfileImageUrl(),
+                post.getUser().getProfileImageUrl(),
                 post.getUserLikeCount(),
                 post.getCreatedAt(),
                 post.getModifiedAt()

@@ -1,7 +1,7 @@
 package com.example.newspeed.service;
 
 import com.example.newspeed.dto.user.*;
-import com.example.newspeed.entity.Users;
+import com.example.newspeed.entity.User;
 import com.example.newspeed.repository.UsersRepository;
 import com.example.newspeed.util.PasswordEncoder;
 import lombok.AllArgsConstructor;
@@ -27,11 +27,11 @@ public class UsersServiceImpl implements UsersService{
         // 비밀번호 encoding
         final String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
 
-        Users user = new Users(
+        User user = new User(
                 signupRequest.getEmail(), encodedPassword, signupRequest.getUserName(),
                 signupRequest.getIntro(), signupRequest.getProfileImageUrl());
 
-        Users savedUser = usersRepository.save(user);
+        User savedUser = usersRepository.save(user);
 
         return new SignupUserResponseDto(savedUser);
     }
@@ -40,7 +40,7 @@ public class UsersServiceImpl implements UsersService{
     @Override
     public LoginUserResponseDto logIn(LoginUserRequestDto loginRequest){
 
-        Users findUser = usersRepository.findByEmail(loginRequest.getEmail())
+        User findUser = usersRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + loginRequest.getEmail()));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), findUser.getPassword())) {
@@ -62,7 +62,7 @@ public class UsersServiceImpl implements UsersService{
         } else if(name != null){
             // name으로 유저 검색
 
-            Users user = usersRepository.findByUserName(name)
+            User user = usersRepository.findByUserName(name)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + name));
 
             return List.of(new SearchUserResponseDto(user));
@@ -70,16 +70,16 @@ public class UsersServiceImpl implements UsersService{
         } else if(email != null){
             // email로 유저 검색
 
-            Users user = usersRepository.findByEmail(email)
+            User user = usersRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
             return List.of(new SearchUserResponseDto(user));
 
         } else {
             // param 입력되지 않으면 전체 유저 리스트 검색
 
-            List<Users> usersList = usersRepository.findAll();
+            List<User> userList = usersRepository.findAll();
 
-            return usersList.stream()
+            return userList.stream()
                     .map(SearchUserResponseDto::new)
                     .collect(Collectors.toList());
         }
@@ -89,7 +89,7 @@ public class UsersServiceImpl implements UsersService{
     @Override
     @Transactional
     public void updateUserProfile(UpdateUserProfileRequestDto updateRequest){ //profile 수정 통합 - password 암호화 미구현 상태
-        Users user = usersRepository.findByEmail(updateRequest.getEmail())
+        User user = usersRepository.findByEmail(updateRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
         if(updateRequest.getUserName() != null){
             user.setUserName(updateRequest.getUserName());
@@ -108,7 +108,7 @@ public class UsersServiceImpl implements UsersService{
     @Override
     @Transactional
     public void deleteUser(DeleteUsersRequestDto deleteRequest) {
-        Users user = usersRepository.findByEmail(deleteRequest.getEmail())
+        User user = usersRepository.findByEmail(deleteRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
         usersRepository.delete(user); //Bcrypt 암호화 미적용 상태 - 우선 어떤 비밀번호든 상관없이 삭제 요청시 삭제(암호화 적용 시 구현 예정)
     }
