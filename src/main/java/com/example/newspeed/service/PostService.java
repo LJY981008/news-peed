@@ -2,6 +2,7 @@ package com.example.newspeed.service;
 
 
 import com.example.newspeed.dto.Post.FindPostResponseDto;
+import com.example.newspeed.dto.Post.UpdatePostRequestDto;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.PostRepository;
@@ -31,10 +32,9 @@ public class PostService {
     }
 
     // 게시글 수정
-    public FindPostResponseDto updatePost(Long id, String newTitle, String newContents, String password) {
-
-        Post findPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("없엉"));
-        findPost.updatePost(newTitle, newContents);
+    public FindPostResponseDto updatePost(Long id, UpdatePostRequestDto updateDto) {
+        Post findPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("없음"));
+        findPost.updatePost(updateDto.getTitle(), updateDto.getContents());
         return new FindPostResponseDto(findPost);
     }
 }

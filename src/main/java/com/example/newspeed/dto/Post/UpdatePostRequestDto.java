@@ -7,11 +7,9 @@ public class UpdatePostRequestDto {
 
     private final String title;
     private final String contents;
-    private final String password;
 
-    public UpdatePostRequestDto(String title, String contents, String password) {
+    public UpdatePostRequestDto(String title, String contents) {
         this.title = title;
         this.contents = contents;
-        this.password = password;
     }
 }
