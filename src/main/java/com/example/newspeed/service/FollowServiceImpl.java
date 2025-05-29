@@ -7,6 +7,7 @@ import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.FollowRepository;
 import com.example.newspeed.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.NotFound;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,5 +32,17 @@ public class FollowServiceImpl implements FollowService{
 
         Follow follow = new Follow(currentUserId, followedUserId);
         followRepository.save(follow);
+    }
+
+    @Override
+    @Transactional
+    public void unfollow(Long currentUserId, String targetEmail){
+        Users targetUser = usersRepository.findByEmail(targetEmail)
+                .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
+        //팔로우 하지 않은 관계에서 삭제 요청 시 예외처리
+        boolean exists = followRepository.existsByFollowingUserIdAndFollowedUserId(currentUserId, targetUser.getUserId());
+        if(!exists) throw new NotFoundException("팔로우한 유저가 아닙니다.");
+
+        followRepository.deleteByFollowingUserIdAndFollowedUserId(currentUserId, targetUser.getUserId());
     }
 }
