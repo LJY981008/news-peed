@@ -10,14 +10,10 @@ import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.CommentRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 댓글 서비스
@@ -29,13 +25,11 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
 
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository, UserRepository userRepository, ModelMapper modelMapper) {
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
     }
 
     /**
@@ -43,19 +37,17 @@ public class CommentService {
      *
      * @param postId        댓글이 등록될 게시글
      * @param requestDto    요청 DTO
-     * @return {@link CommentCreateResponseDtoComment} 반환 DTO
+     * @return {@link CommentCreateResponseDto} 반환 DTO
      */
     @Transactional
-    public CommentCreateResponseDtoComment createComment(Long postId, CommentCreateRequestDto requestDto) {
+    public CommentCreateResponseDto createComment(Long postId, CommentCreateRequestDto requestDto, AuthUserDto userDto) {
         Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
-
-        AuthUserDto authUserDto = getAuthUser();
-        User user = userRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
+        User user = userRepository.findByEmail(userDto.getEmail()).orElseThrow(() -> new NotFoundException("Not Found User"));
 
         Comment comment = new Comment(requestDto.getContent(), findPost, user);
         commentRepository.save(comment);
 
-        CommentCreateResponseDtoComment responseDto = modelMapper.map(comment, CommentCreateResponseDtoComment.class);
+        CommentCreateResponseDto responseDto = new CommentCreateResponseDto(comment);
         return responseDto;
     }
 
@@ -63,15 +55,16 @@ public class CommentService {
      * 게시글의 모든 댓글 조회
      *
      * @param postId 조회할 게시글 ID
-     * @return {@link CommentFindResponseDtoComment} 반환 DTO 리스트
+     * @return {@link CommentFindResponseDto} 반환 DTO 리스트
      */
-    public List<CommentFindResponseDtoComment> findCommentByPostId(Long postId) {
+    @Transactional(readOnly = true)
+    public List<CommentFindResponseDto> findCommentByPostId(Long postId) {
         Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
         List<Comment> comments = findPost.getComments();
 
-        List<CommentFindResponseDtoComment> responseDtoList = comments
+        List<CommentFindResponseDto> responseDtoList = comments
                 .stream()
-                .map(comment -> modelMapper.map(comment, CommentFindResponseDtoComment.class))
+                .map(CommentFindResponseDto::new)
                 .toList();
         return responseDtoList;
     }
@@ -81,12 +74,12 @@ public class CommentService {
      *
      * @param commentId     수정할 댓글 ID
      * @param requestDto    {@link CommentUpdateRequestDto} 요청 DTO
-     * @return {@link CommentUpdateResponseDtoComment} 반환 DTO
+     * @return {@link CommentUpdateResponseDto} 반환 DTO
      */
-    //TODO 회원 기능 구현 후 이름 적용 필요
-    public CommentUpdateResponseDtoComment updateComment(Long commentId, CommentUpdateRequestDto requestDto) {
+    @Transactional
+    public CommentUpdateResponseDto updateComment(Long commentId, CommentUpdateRequestDto requestDto, AuthUserDto userDto) {
         Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
-        verifyWriterAuthorities(findComment);
+        verifyWriterAuthorities(findComment, userDto);
 
         String prevContent = findComment.getContent();
         if(prevContent.equals(requestDto.getContent()))
@@ -95,43 +88,25 @@ public class CommentService {
         findComment.updateContent(requestDto.getContent());
         commentRepository.save(findComment);
 
-        CommentUpdateResponseDtoComment responseDto = modelMapper.map(findComment, CommentUpdateResponseDtoComment.class);
+        CommentUpdateResponseDto responseDto = new CommentUpdateResponseDto(findComment);
         responseDto.setPrevContent(prevContent);
 
         return responseDto;
     }
 
-    public CommentRemoveResponseDtoComment deleteComment(Long commentId) {
+    @Transactional
+    public CommentRemoveResponseDto deleteComment(Long commentId, AuthUserDto userDto) {
         Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
-        verifyWriterAuthorities(findComment);
+        verifyWriterAuthorities(findComment, userDto);
 
-        CommentRemoveResponseDtoComment responseDto = modelMapper.map(findComment, CommentRemoveResponseDtoComment.class);
+        CommentRemoveResponseDto responseDto = new  CommentRemoveResponseDto(findComment);
         commentRepository.delete(findComment);
 
         return responseDto;
     }
 
-    private void verifyWriterAuthorities(Comment comment) {
-        Optional<Authentication> authentication = Optional.ofNullable(
-                SecurityContextHolder.getContext().getAuthentication()
-        );
-        if(authentication.isPresent() && authentication.get().getPrincipal() instanceof AuthUserDto) {
-            AuthUserDto auth = (AuthUserDto) authentication.get().getPrincipal();
-            if(!auth.getEmail().equals(comment.getUser().getEmail())) {
-                throw new AuthenticationException("Unauthorized");
-            }
-        } else {
-            throw new AuthenticationException("Unauthorized");
-        }
-    }
-
-    private AuthUserDto getAuthUser() {
-        Optional<Authentication> authentication = Optional.ofNullable(
-                SecurityContextHolder.getContext().getAuthentication()
-        );
-        if(authentication.isPresent() && authentication.get().getPrincipal() instanceof AuthUserDto) {
-            return (AuthUserDto) authentication.get().getPrincipal();
-        } else  {
+    private void verifyWriterAuthorities(Comment comment, AuthUserDto userDto) {
+        if(!userDto.getEmail().equals(comment.getUser().getEmail())) {
             throw new AuthenticationException("Unauthorized");
         }
     }

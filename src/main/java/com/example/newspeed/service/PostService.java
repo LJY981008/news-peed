@@ -28,16 +28,19 @@ public class PostService {
     private final UserRepository usersRepository;
 
     // 게시글 전체
+    @Transactional
     public Page<FindPostResponseDto> findPost(Pageable pageable){
         return postRepository.findAll(pageable).map(FindPostResponseDto::findPostDto);
     }
 
     // 게시글 단건 조회
+    @Transactional
     public FindPostResponseDto findById(Long userId) {
         Post findPost = postRepository.findById(userId).orElseThrow(() -> new NotFoundException("없음"));
         return new FindPostResponseDto(findPost);
     }
     // 게시글 생성
+    @Transactional
     public CreatePostResponseDto createPost(String title, String content, String imageUrl, Long userId) {
         User user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("없음"));
         Post post = new Post(title, content, imageUrl, user);
@@ -46,6 +49,7 @@ public class PostService {
     }
 
     // 게시글 삭제
+    @Transactional
     public DeletePostResponseDto deletePost(Long postId, AuthUserDto authUserDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 게시글이 없습니다."));
         Long loginUserId = authUserDto.getId();
