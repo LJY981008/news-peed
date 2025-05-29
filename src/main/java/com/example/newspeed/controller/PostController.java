@@ -2,6 +2,9 @@ package com.example.newspeed.controller;
 
 
 import com.example.newspeed.dto.Post.FindPostResponseDto;
+import com.example.newspeed.dto.post.CreatePostRequestDto;
+import com.example.newspeed.dto.post.CreatePostResponseDto;
+import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.Post.UpdatePostRequestDto;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +55,20 @@ public class PostController {
         FindPostResponseDto findDto = postService.findById(postId);
         return new ResponseEntity<>(findDto, HttpStatus.OK);
 
+    }
+    // 게시글 생성
+    @PostMapping("/create-posts")
+    public ResponseEntity<CreatePostResponseDto> createPost(@RequestBody CreatePostRequestDto dto) {
+        CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl());
+
+        return ResponseEntity.status(201).body(post);
+    }
+    // 게시글 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<DeletePostResponseDto> deletePost(@RequestParam Long postId) {
+        DeletePostResponseDto deletePost = postService.deletePost(postId);
+
+        return ResponseEntity.status(200).body(deletePost);
     }
 
     // 게시글 수정
