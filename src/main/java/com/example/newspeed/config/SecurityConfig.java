@@ -55,7 +55,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 팔로우 인가
-                        .requestMatchers(HttpMethod.POST, "/news-peed/follows").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/news-peed/follows/follow").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/news-peed/follows/unfollow").hasRole("USER")
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 게시글 인가

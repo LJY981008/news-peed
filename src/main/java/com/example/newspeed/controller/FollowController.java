@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,10 +19,17 @@ public class FollowController {
     private final FollowService followService;
 
     //이메일로 유저 검색해 팔로우
-    @PostMapping
+    @PostMapping("/follow")
     public ResponseEntity<String> followUser(@AuthenticationPrincipal AuthUserDto userDto, @Valid @RequestBody FollowRequestDto followRequest){
         Long currentUserId = userDto.getId();
         followService.follow(currentUserId, followRequest.getTargetEmail());
+        return ResponseEntity.ok("success");
+    }
+
+    @DeleteMapping("/unfollow")
+    public ResponseEntity<String> unfollowUser(@AuthenticationPrincipal AuthUserDto userDto, @Valid @RequestBody FollowRequestDto followRequest){
+        Long currentUserId = userDto.getId();
+        followService.unfollow(currentUserId, followRequest.getTargetEmail());
         return ResponseEntity.ok("success");
     }
 }
