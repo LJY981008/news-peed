@@ -1,8 +1,8 @@
 package com.example.newspeed.controller;
 
 
-import com.example.newspeed.dto.AuthUserDto;
-import com.example.newspeed.dto.Post.FindPostResponseDto;
+import com.example.newspeed.dto.user.AuthUserDto;
+import com.example.newspeed.dto.post.FindPostResponseDto;
 import com.example.newspeed.dto.post.CreatePostRequestDto;
 import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;

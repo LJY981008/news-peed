@@ -1,7 +1,7 @@
 package com.example.newspeed.service;
 
 
-import com.example.newspeed.dto.Post.FindPostResponseDto;
+import com.example.newspeed.dto.post.FindPostResponseDto;
 import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.FindPostResponseDto;

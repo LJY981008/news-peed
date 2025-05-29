@@ -13,8 +13,10 @@ public class Follow {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "follow_id")
     private Long followId;
+
     @JoinColumn(name = "following_user_id", nullable = false)
     private Long followingUserId;
+
     @JoinColumn(name = "followed_user_id", nullable = false)
     private Long followedUserId;
 
