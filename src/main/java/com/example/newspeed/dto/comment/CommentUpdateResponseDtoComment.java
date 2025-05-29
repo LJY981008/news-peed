@@ -6,10 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Builder
-public class CommentUpdateResponseDto {
-    private Long id;
-    private String writer;
-    private String currentContent;
+public class CommentUpdateResponseDtoComment extends CommentBaseResponse {
     private String createdAt;
     private String modifiedAt;
 
