@@ -1,22 +1,14 @@
 package com.example.newspeed.controller;
 
-import com.example.newspeed.config.JwtUtil;
-import com.example.newspeed.dto.*;
-import com.example.newspeed.enums.UserRole;
+import com.example.newspeed.dto.user.*;
 import com.example.newspeed.service.UsersService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -80,7 +72,7 @@ public class UsersController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<SearchUserResponseDto>> search(@RequestParam(required = false) String name,
-                                                        @RequestParam(required = false) String email){
+                                                              @RequestParam(required = false) String email){
         List<SearchUserResponseDto> searchResponseList = usersService.search(name, email);
 
         return new ResponseEntity<>(searchResponseList, HttpStatus.OK);

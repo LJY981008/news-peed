@@ -1,6 +1,6 @@
 package com.example.newspeed.service;
 
-import com.example.newspeed.dto.*;
+import com.example.newspeed.dto.user.*;
 
 import java.util.List;
 
