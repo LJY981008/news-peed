@@ -1,5 +1,6 @@
 package com.example.newspeed.exception;
 
+import com.example.newspeed.exception.exceptions.AuthenticationException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +41,11 @@ public class GlobalExceptionHandler {
         BindingResult bindingResult = e.getBindingResult();
         Map<String, Object> errors = Map.of("message", bindingResult.getFieldError().getDefaultMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthenticationException(AuthenticationException e) {
+        Map<String, Object> errors = Map.of("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
     }
 }
