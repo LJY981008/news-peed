@@ -1,6 +1,7 @@
 package com.example.newspeed.config;
 
 import com.example.newspeed.Filter.JwtFilter;
+import com.example.newspeed.Filter.JwtLoginBlockFilter;
 import com.example.newspeed.constant.Const;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.authentication.JwtAccessDeniedHandler;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtLoginBlockFilter jwtLoginBlockFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -55,6 +57,7 @@ public class SecurityConfig {
                         // 게시글 인가
                         .anyRequest().permitAll()
                 )
+                .addFilterBefore(jwtLoginBlockFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling( configure -> configure
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)

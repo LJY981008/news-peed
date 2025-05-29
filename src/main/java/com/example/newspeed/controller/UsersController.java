@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/news-peed/users")
 public class UsersController {
     private final UsersService usersService;
     private final JwtUtil jwtUtil;
