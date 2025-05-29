@@ -1,11 +1,17 @@
 package com.example.newspeed.controller;
 
 
+import com.example.newspeed.dto.user.AuthUserDto;
+import com.example.newspeed.dto.post.FindPostResponseDto;
+import com.example.newspeed.dto.post.CreatePostRequestDto;
+import com.example.newspeed.dto.post.CreatePostResponseDto;
+import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.*;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,8 +60,10 @@ public class PostController {
     }
     // 게시글 생성
     @PostMapping("/create-posts")
-    public ResponseEntity<CreatePostResponseDto> createPost(@RequestBody CreatePostRequestDto dto) {
-        CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl());
+    public ResponseEntity<CreatePostResponseDto> createPost(
+            @RequestBody CreatePostRequestDto dto,
+            @AuthenticationPrincipal AuthUserDto userDto) {
+        CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl(),userDto.getId());
 
         return ResponseEntity.status(201).body(post);
     }
