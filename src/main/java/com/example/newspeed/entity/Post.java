@@ -32,7 +32,7 @@ public class Post extends TimeStampEntity{
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long userLikeCount;
 
     @Column(nullable = false)
@@ -44,5 +44,9 @@ public class Post extends TimeStampEntity{
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
+    }
+
+    public Post() {
+
     }
 }
