@@ -24,10 +24,6 @@ public class FollowController {
     //이메일로 유저 검색해 팔로우
     @PostMapping
     public ResponseEntity<String> followUser(@AuthenticationPrincipal AuthUserDto userDto, @Valid @RequestBody FollowRequestDto followRequest){
-        if(userDto == null){
-            throw new AuthenticationException("인증되지 않은 사용자입니다.");
-        }
-
         Long currentUserId = userDto.getId();
         followService.follow(currentUserId, followRequest.getTargetEmail());
         return ResponseEntity.ok("success");

@@ -52,6 +52,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/news-peed/users/quit").hasRole("USER")
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // 팔로우 인가
+                        .requestMatchers(HttpMethod.POST, "/news-peed/follows").hasRole("USER")
+                )
+                .authorizeHttpRequests(auth -> auth
                         // 게시글 인가
                         .anyRequest().permitAll()
                 )
