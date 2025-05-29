@@ -1,26 +1,24 @@
 package com.example.newspeed.service;
 
 
-import com.example.newspeed.dto.Post.FindPostResponseDto;
 import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
-import com.example.newspeed.entity.Post;
+import com.example.newspeed.dto.post.FindPostResponseDto;
+import com.example.newspeed.dto.post.UpdatePostRequestDto;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.PostRepository;
-import com.example.newspeed.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
+
 
     private final PostRepository postRepository;
 
@@ -30,8 +28,8 @@ public class PostService {
     }
 
     // 게시글 단건 조회
-    public FindPostResponseDto findById(Long id) {
-        Post findPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("없음"));
+    public FindPostResponseDto findById(Long userId) {
+        Post findPost = postRepository.findById(userId).orElseThrow(() -> new NotFoundException("없음"));
         return new FindPostResponseDto(findPost);
     }
     // 게시글 생성
@@ -48,5 +46,12 @@ public class PostService {
         postRepository.delete(post);
 
         return new DeletePostResponseDto();
+    }
+
+    // 게시글 수정
+    public FindPostResponseDto updatePost(Long postId, UpdatePostRequestDto updateDto) {
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("없음"));
+        findPost.updatePost(updateDto);
+        return new FindPostResponseDto(findPost);
     }
 }
