@@ -1,9 +1,18 @@
 package com.example.newspeed.service;
 
+import com.example.newspeed.dto.AuthUserDto;
 import com.example.newspeed.dto.comment.*;
 import com.example.newspeed.entity.Comment;
 import com.example.newspeed.entity.Post;
+import com.example.newspeed.entity.Users;
+import com.example.newspeed.exception.exceptions.AuthenticationException;
+import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.CommentRepository;
+import com.example.newspeed.repository.PostRepository;
+import com.example.newspeed.repository.UsersRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +27,15 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
+    private final UsersRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository, UsersRepository userRepository, ModelMapper modelMapper) {
         this.commentRepository = commentRepository;
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -28,23 +43,19 @@ public class CommentService {
      *
      * @param postId        댓글이 등록될 게시글
      * @param requestDto    요청 DTO
-     * @return {@link CommentCreateResponseDto} 반환 DTO
+     * @return {@link CommentCreateResponseDtoComment} 반환 DTO
      */
-    //TODO 커스텀 예외 선언 필요, 회원, 게시글 기능 추가 시 회원, 게시글 정보 추가
     @Transactional
-    public CommentCreateResponseDto createComment(Long postId, CommentCreateRequestDto requestDto) {
-        Optional<Post> findPost = commentRepository.findPostById(postId);
-        if(findPost.isEmpty()) throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-        Post post = findPost.get();
+    public CommentCreateResponseDtoComment createComment(Long postId, CommentCreateRequestDto requestDto) {
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
 
-        Comment comment = new Comment(requestDto.getContent(), post);
+        AuthUserDto authUserDto = getAuthUser();
+        Users user = userRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
+
+        Comment comment = new Comment(requestDto.getContent(), findPost, user);
         commentRepository.save(comment);
 
-        CommentCreateResponseDto responseDto = CommentCreateResponseDto.builder()
-                .id(comment.getId())
-                //.writer(loggedInUser)
-                //.postId(post.getId())
-                .build();
+        CommentCreateResponseDtoComment responseDto = modelMapper.map(comment, CommentCreateResponseDtoComment.class);
         return responseDto;
     }
 
@@ -52,17 +63,15 @@ public class CommentService {
      * 게시글의 모든 댓글 조회
      *
      * @param postId 조회할 게시글 ID
-     * @return {@link CommentFindResponseDto} 반환 DTO 리스트
+     * @return {@link CommentFindResponseDtoComment} 반환 DTO 리스트
      */
-    public List<CommentFindResponseDto> findCommentByPostId(Long postId) {
-        Optional<Post> findPost = commentRepository.findPostById(postId);
-        if(findPost.isEmpty()) throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+    public List<CommentFindResponseDtoComment> findCommentByPostId(Long postId) {
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
+        List<Comment> comments = findPost.getComments();
 
-        List<Comment> comments = commentRepository.findCommentsByPostId(postId);
-
-        List<CommentFindResponseDto> responseDtoList = comments
+        List<CommentFindResponseDtoComment> responseDtoList = comments
                 .stream()
-                .map(CommentFindResponseDto::from)
+                .map(comment -> modelMapper.map(comment, CommentFindResponseDtoComment.class))
                 .toList();
         return responseDtoList;
     }
@@ -72,44 +81,58 @@ public class CommentService {
      *
      * @param commentId     수정할 댓글 ID
      * @param requestDto    {@link CommentUpdateRequestDto} 요청 DTO
-     * @return {@link CommentUpdateResponseDto} 반환 DTO
+     * @return {@link CommentUpdateResponseDtoComment} 반환 DTO
      */
     //TODO 회원 기능 구현 후 이름 적용 필요
-    public CommentUpdateResponseDto updateComment(Long commentId, CommentUpdateRequestDto requestDto) {
-        Optional<Comment> findComment = commentRepository.findById(commentId);
-        if(findComment.isEmpty()) throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
-        Comment comment = findComment.get();
-        String prevContent = comment.getContent();
+    public CommentUpdateResponseDtoComment updateComment(Long commentId, CommentUpdateRequestDto requestDto) {
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
+        verifyWriterAuthorities(findComment);
 
+        String prevContent = findComment.getContent();
         if(prevContent.equals(requestDto.getContent()))
             throw new IllegalArgumentException("변경할 내용이 없습니다.");
 
-        comment.updateContent(requestDto.getContent());
-        commentRepository.save(comment);
+        findComment.updateContent(requestDto.getContent());
+        commentRepository.save(findComment);
 
-        CommentUpdateResponseDto responseDto = CommentUpdateResponseDto.builder()
-                .id(comment.getId())
-                .writer("이름")
-                .prevContent(prevContent)
-                .currentContent(comment.getContent())
-                .createdAt(comment.getCreatedAt().toString())
-                .modifiedAt(comment.getModifiedAt().toString())
-                .build();
+        CommentUpdateResponseDtoComment responseDto = modelMapper.map(findComment, CommentUpdateResponseDtoComment.class);
+        responseDto.setPrevContent(prevContent);
+
         return responseDto;
     }
 
-    public CommentRemoveResponseDto deleteComment(Long commentId) {
-        Optional<Comment> findComment = commentRepository.findById(commentId);
-        if(findComment.isEmpty()) throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
-        Comment comment = findComment.get();
+    public CommentRemoveResponseDtoComment deleteComment(Long commentId) {
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
+        verifyWriterAuthorities(findComment);
 
-        CommentRemoveResponseDto responseDto = CommentRemoveResponseDto.builder()
-                .id(comment.getId())
-                .writer("이름")
-                .content(comment.getContent())
-                .build();
-        commentRepository.delete(comment);
+        CommentRemoveResponseDtoComment responseDto = modelMapper.map(findComment, CommentRemoveResponseDtoComment.class);
+        commentRepository.delete(findComment);
 
         return responseDto;
+    }
+
+    private void verifyWriterAuthorities(Comment comment) {
+        Optional<Authentication> authentication = Optional.ofNullable(
+                SecurityContextHolder.getContext().getAuthentication()
+        );
+        if(authentication.isPresent() && authentication.get().getPrincipal() instanceof AuthUserDto) {
+            AuthUserDto auth = (AuthUserDto) authentication.get().getPrincipal();
+            if(!auth.getEmail().equals(comment.getUser().getEmail())) {
+                throw new AuthenticationException("Unauthorized");
+            }
+        } else {
+            throw new AuthenticationException("Unauthorized");
+        }
+    }
+
+    private AuthUserDto getAuthUser() {
+        Optional<Authentication> authentication = Optional.ofNullable(
+                SecurityContextHolder.getContext().getAuthentication()
+        );
+        if(authentication.isPresent() && authentication.get().getPrincipal() instanceof AuthUserDto) {
+            return (AuthUserDto) authentication.get().getPrincipal();
+        } else  {
+            throw new AuthenticationException("Unauthorized");
+        }
     }
 }

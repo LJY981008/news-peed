@@ -1,5 +1,6 @@
 package com.example.newspeed.config;
 
+import com.example.newspeed.constant.Const;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.ServerException;
 import io.jsonwebtoken.Claims;
@@ -23,8 +24,7 @@ public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
 
-    @Value("testJwtKey")
-    private String secretKey;
+    private String secretKey = Const.TOKEN_KEY;
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 

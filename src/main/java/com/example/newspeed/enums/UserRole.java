@@ -1,5 +1,7 @@
 package com.example.newspeed.enums;
 
+import com.example.newspeed.exception.exceptions.InvalidRequestException;
+
 import java.util.Arrays;
 
 public enum UserRole {
