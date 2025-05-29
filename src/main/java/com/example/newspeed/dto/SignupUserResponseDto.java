@@ -14,7 +14,7 @@ public class SignupUserResponseDto {
     private final String intro;
     private final String profileImageUrl;
     private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private final LocalDateTime modifiedAt;
 
     public SignupUserResponseDto(Users user){
         this.id = user.getUserId();
@@ -24,6 +24,6 @@ public class SignupUserResponseDto {
         this.intro = user.getIntro();
         this.profileImageUrl = user.getProfileImageUrl();
         this.createdAt = user.getCreatedAt();
-        this.updatedAt = user.getUpdatedAt();
+        this.modifiedAt = user.getModifiedAt();
     }
 }

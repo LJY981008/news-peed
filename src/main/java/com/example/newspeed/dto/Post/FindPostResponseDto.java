@@ -19,7 +19,7 @@ public class FindPostResponseDto {
     private LocalDateTime modifiedAt;
 
     public FindPostResponseDto(Post post) {
-        this.userId = post.getUserId();
+        this.userId = post.getPostId();
         this.userName = post.getUsers().getUserName();
         this.title = post.getTitle();
         this.contents = post.getContent();
@@ -31,7 +31,7 @@ public class FindPostResponseDto {
 
     public static FindPostResponseDto findPostDto(Post post) {
         return new FindPostResponseDto(
-                post.getUserId(),
+                post.getPostId(),
                 post.getUsers().getUserName(),
                 post.getTitle(),
                 post.getContent(),
