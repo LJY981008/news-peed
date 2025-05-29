@@ -6,6 +6,7 @@ import com.example.newspeed.entity.Post;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.CommentRepository;
 import com.example.newspeed.repository.PostRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +22,12 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final ModelMapper modelMapper;
 
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository, ModelMapper modelMapper) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -42,11 +45,7 @@ public class CommentService {
         Comment comment = new Comment(requestDto.getContent(), findPost);
         commentRepository.save(comment);
 
-        CommentCreateResponseDto responseDto = CommentCreateResponseDto.builder()
-                .id(comment.getId())
-                //.writer(loggedInUser)
-                //.postId(post.getId())
-                .build();
+        CommentCreateResponseDto responseDto = modelMapper.map(comment, CommentCreateResponseDto.class);
         return responseDto;
     }
 
@@ -62,7 +61,7 @@ public class CommentService {
 
         List<CommentFindResponseDto> responseDtoList = comments
                 .stream()
-                .map(CommentFindResponseDto::from)
+                .map(comment -> modelMapper.map(comment, CommentFindResponseDto.class))
                 .toList();
         return responseDtoList;
     }
@@ -77,7 +76,6 @@ public class CommentService {
     //TODO 회원 기능 구현 후 이름 적용 필요
     public CommentUpdateResponseDto updateComment(Long commentId, CommentUpdateRequestDto requestDto) {
         Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
-
         String prevContent = findComment.getContent();
 
         if(prevContent.equals(requestDto.getContent()))
@@ -86,28 +84,17 @@ public class CommentService {
         findComment.updateContent(requestDto.getContent());
         commentRepository.save(findComment);
 
-        CommentUpdateResponseDto responseDto = CommentUpdateResponseDto.builder()
-                .id(findComment.getId())
-                .writer("이름")
-                .prevContent(prevContent)
-                .currentContent(findComment.getContent())
-                .createdAt(findComment.getCreatedAt().toString())
-                .modifiedAt(findComment.getModifiedAt().toString())
-                .build();
+        CommentUpdateResponseDto responseDto = modelMapper.map(findComment, CommentUpdateResponseDto.class);
+        responseDto.setPrevContent(prevContent);
+
         return responseDto;
     }
 
     public CommentRemoveResponseDto deleteComment(Long commentId) {
-        Optional<Comment> findComment = commentRepository.findById(commentId);
-        if(findComment.isEmpty()) throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
-        Comment comment = findComment.get();
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
 
-        CommentRemoveResponseDto responseDto = CommentRemoveResponseDto.builder()
-                .id(comment.getId())
-                .writer("이름")
-                .content(comment.getContent())
-                .build();
-        commentRepository.delete(comment);
+        CommentRemoveResponseDto responseDto = modelMapper.map(findComment, CommentRemoveResponseDto.class);
+        commentRepository.delete(findComment);
 
         return responseDto;
     }
