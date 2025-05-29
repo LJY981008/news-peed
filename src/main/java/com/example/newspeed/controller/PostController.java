@@ -7,6 +7,7 @@ import com.example.newspeed.dto.post.CreatePostRequestDto;
 import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.*;
+import com.example.newspeed.entity.Post;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -69,8 +70,8 @@ public class PostController {
     }
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<DeletePostResponseDto> deletePost(@PathVariable Long postId) {
-        DeletePostResponseDto deletePost = postService.deletePost(postId);
+    public ResponseEntity<DeletePostResponseDto> deletePost(@PathVariable Long postId, @AuthenticationPrincipal AuthUserDto authUserDto) {
+        DeletePostResponseDto deletePost = postService.deletePost(postId, authUserDto);
 
         return ResponseEntity.status(200).body(deletePost);
     }
