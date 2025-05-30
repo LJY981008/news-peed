@@ -5,9 +5,11 @@ import com.example.newspeed.dto.post.*;
 
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.entity.Post;
+import com.example.newspeed.entity.PostLike;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
+import com.example.newspeed.repository.LikeRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,7 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
     private final UserRepository usersRepository;
 
     // 게시글 전체
@@ -74,5 +77,15 @@ public class PostService {
         Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("없음"));
         findPost.updatePost(updateDto);
         return new FindPostResponseDto(findPost);
+    }
+
+    @Transactional
+    public ToggleLikeResponseDto toggleLike(Long postId, AuthUserDto authUserDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
+        User user = usersRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
+
+
+        PostLike postLike = new PostLike(user, post);
+
     }
 }
