@@ -92,7 +92,7 @@ public class PostController {
         return ResponseEntity.status(201).body(post);
     }
     // 게시글 삭제
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/delete-posts/{postId}")
     public ResponseEntity<DeletePostResponseDto> deletePost(@PathVariable Long postId, @AuthenticationPrincipal AuthUserDto authUserDto) {
         DeletePostResponseDto deletePost = postService.deletePost(postId, authUserDto);
 

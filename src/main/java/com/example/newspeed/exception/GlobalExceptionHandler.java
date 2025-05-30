@@ -8,9 +8,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 전역 예외처리 핸들러
@@ -47,6 +48,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleAuthenticationException(AuthenticationException e) {
         Map<String, Object> errors = Map.of("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
+    }
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException e) {
+        String message = Optional.ofNullable(e.getReason()).orElse("알 수 없는 오류가 발생했습니다.");
+        Map<String, Object> errors = Map.of("message",message);
+        return ResponseEntity.status(e.getStatusCode()).body(errors);
     }
 
 
