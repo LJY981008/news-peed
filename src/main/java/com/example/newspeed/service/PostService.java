@@ -9,6 +9,7 @@ import com.example.newspeed.entity.PostLike;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
+import com.example.newspeed.repository.FollowRepository;
 import com.example.newspeed.repository.LikeRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
@@ -23,6 +24,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +32,8 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository usersRepository;
+    private final FollowRepository followRepository;
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
 
@@ -37,6 +41,14 @@ public class PostService {
     @Transactional
     public Page<FindPostResponseDto> findPost(Pageable pageable){
         return postRepository.findAll(pageable).map(FindPostResponseDto::findPostDto);
+    }
+
+    @Transactional
+    public Page<FindPostResponseDto> findFollowingPosts(Long currentUserId, Pageable pageable){
+        List<Long> followedUserIds = followRepository.findFollowedUserIdsByFollowingUserId(currentUserId);
+
+        return postRepository.findByUser_UserIdIn(followedUserIds, pageable)
+                .map(FindPostResponseDto::findPostDto);
     }
 
     // 게시글 단건 조회
@@ -76,8 +88,12 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public FindPostResponseDto updatePost(Long postId, UpdatePostRequestDto updateDto) {
-        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("없음"));
+    public FindPostResponseDto updatePost(Long postId, AuthUserDto authUserDto,UpdatePostRequestDto updateDto) {
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("수정할 게시글을 찾지 못했습니다."));
+        Long loginUserId = authUserDto.getId(); // 로그인 유저 id 검사
+        if(!findPost.getUser().getUserId().equals(loginUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 글만 수정할 수 있습니다.");
+        }
         findPost.updatePost(updateDto);
         return new FindPostResponseDto(findPost);
     }
