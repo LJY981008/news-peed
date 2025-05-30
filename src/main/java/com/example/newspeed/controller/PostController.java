@@ -10,6 +10,7 @@ import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.*;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,9 +93,9 @@ public class PostController {
      */
     @PostMapping("/create-posts")
     public ResponseEntity<CreatePostResponseDto> createPost(
-            @RequestBody CreatePostRequestDto dto,
+            @RequestBody @Valid CreatePostRequestDto dto,
             @AuthenticationPrincipal AuthUserDto userDto) {
-        CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl(),userDto.getId());
+        CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl(),userDto);
 
         return ResponseEntity.status(201).body(post);
     }

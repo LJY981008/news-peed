@@ -74,7 +74,8 @@ public class PostService {
      * @author 윤희준
      */
     @Transactional
-    public CreatePostResponseDto createPost(String title, String content, String imageUrl, Long userId) {
+    public CreatePostResponseDto createPost(String title, String content, String imageUrl, AuthUserDto userDto) {
+        Long userId = userDto.getId();
         User user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("로그인이 필요한 서비스입니다."));
         Post post = new Post(title, content, imageUrl, user);
         postRepository.save(post);
