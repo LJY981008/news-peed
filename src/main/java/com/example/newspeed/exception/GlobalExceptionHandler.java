@@ -1,8 +1,6 @@
 package com.example.newspeed.exception;
 
-import com.example.newspeed.exception.exceptions.AuthenticationException;
-import com.example.newspeed.exception.exceptions.InvalidRequestException;
-import com.example.newspeed.exception.exceptions.NotFoundException;
+import com.example.newspeed.exception.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -11,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import java.util.Optional;
@@ -71,5 +70,46 @@ public class GlobalExceptionHandler {
         Map<String, Object> errors = Map.of("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
+
+    /**
+     * 중복된 Email에 대한 예외 처리
+     *
+     * @param e 발생한 예외 객체상태
+     * @return 메세지와 에러코드 반환
+     */
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(DuplicateEmailException e) {
+        Map<String, String> errorBody = new HashMap<>();
+        errorBody.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+    }
+
+
+    /**
+     * 로그인 실패 시 예외 처리
+     *
+     * @param e 발생한 예외 객체상태
+     * @return 메세지와 에러코드 반환
+     */
+    @ExceptionHandler(LoginFailedException.class)
+    public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(LoginFailedException e) {
+        Map<String, String> errorBody = new HashMap<>();
+        errorBody.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+    }
+
+    /**
+     * 검색 결과가 없을 시 예외 처리
+     *
+     * @param e 발생한 예외 객체상태
+     * @return 메세지와 OK 코드 반환
+     */
+    @ExceptionHandler(NoResultFoundException.class)
+    public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(NoResultFoundException e) {
+        Map<String, String> errorBody = new HashMap<>();
+        errorBody.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.OK).body(errorBody);
+    }
+
 
 }
