@@ -3,6 +3,11 @@ package com.example.newspeed.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+/**
+ * <p>댓글 테이블 Entity</p>
+ *
+ * @author 이준영
+ */
 @Getter
 @Entity
 @Table(name = "comments")

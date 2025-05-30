@@ -22,12 +22,17 @@ public class JwtLoginBlockFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String path = request.getRequestURI();
 
+        String path = request.getRequestURI();
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
+        if(authHeader == null){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if ("/news-peed/users/login".equals(path)
-                && authHeader != null && authHeader.startsWith("Bearer ")) {
+                && authHeader.startsWith("Bearer ")) {
 
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "이미 로그인된 사용자입니다.");
             return;

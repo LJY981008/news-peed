@@ -3,12 +3,17 @@ package com.example.newspeed.dto.post;
 import com.example.newspeed.entity.Post;
 import lombok.Getter;
 
+/**
+ * <p>좋아요 응답</p>
+ *
+ * @author 이준영
+ */
 @Getter
-public class ToggleLikeResponseDto {
-    private Long postId;
-    private int likeCount;
+public class GetLikeResponseDto {
+    private final Long postId;
+    private final int likeCount;
 
-    public ToggleLikeResponseDto(Post post) {
+    public GetLikeResponseDto(Post post) {
         this.postId = post.getPostId();
         this.likeCount = post.getUserLikeCount();
     }

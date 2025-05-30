@@ -59,11 +59,4 @@ public class Post extends TimeStampEntity{
         this.title = updateDto.getTitle();
         this.content = updateDto.getContents();
     }
-
-    public void updateLike(boolean trigger){
-        this.userLikeCount = trigger ?  this.userLikeCount + 1 : this.userLikeCount - 1;
-        if(this.userLikeCount < 0){
-            this.userLikeCount = 0;
-        }
-    }
 }
