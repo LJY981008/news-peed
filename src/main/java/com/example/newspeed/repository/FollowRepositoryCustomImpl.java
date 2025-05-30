@@ -7,6 +7,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * <p>follow table QueryDSL 구현</p>
+ *
+ * @author 김도연
+ */
 @Repository
 @RequiredArgsConstructor
 public class FollowRepositoryCustomImpl implements FollowRepositoryCustom{
