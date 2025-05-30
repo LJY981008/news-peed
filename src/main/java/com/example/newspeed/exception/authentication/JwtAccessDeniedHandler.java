@@ -24,7 +24,10 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        Map<String, Object> errors = Map.of("message", accessDeniedException.getMessage());
+        Map<String, Object> errors = Map.of(
+                "errorMessage", accessDeniedException.getMessage(),
+                "message", "인가 실패"
+        );
         String responseBody = objectMapper.writeValueAsString(errors);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -18,6 +18,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * <p>스프링 시큐리티</p>
+ *
+ * @author 이준영
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -47,9 +52,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 유저 인가
-                        .requestMatchers(HttpMethod.POST, "/news-peed/users/signup").permitAll() // 회원가입: 모두 허용
-                        .requestMatchers(HttpMethod.GET, "/news-peed/users/login").permitAll()   // 로그인: 모두 허용
-                        .requestMatchers(HttpMethod.GET, "/news-peed/users/search").hasRole("USER") // 유저 검색: USER만
+                        .requestMatchers(HttpMethod.POST, "/news-peed/users/signup").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/news-peed/users/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/news-peed/users/search").hasRole("USER")
                         .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify").hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, "/news-peed/users/quit").hasRole("USER")
                 )
@@ -60,6 +65,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 게시글 인가
+                        .requestMatchers(HttpMethod.PATCH, Const.POST_URL + "/like").hasRole("USER")
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtLoginBlockFilter, UsernamePasswordAuthenticationFilter.class)

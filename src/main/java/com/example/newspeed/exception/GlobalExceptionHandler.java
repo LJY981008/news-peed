@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 전역 예외처리 핸들러
@@ -43,11 +42,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
+    /**
+     * 접근 권한이 없을 때의 예외처리
+     *
+     * @param e 발생한 예외 객체
+     * @return 상태메세지와 에러코드
+     */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthenticationException(AuthenticationException e) {
         Map<String, Object> errors = Map.of("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
     }
-
-
 }

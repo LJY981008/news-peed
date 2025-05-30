@@ -2,11 +2,15 @@ package com.example.newspeed.dto.comment;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.NonNull;
 
+/**
+ * <p>댓글 생성 요청</p>
+ *
+ * @author 이준영
+ */
 @Getter
 public class CommentCreateRequestDto {
 
     @NotBlank(message = "Content is Empty")
-    String content;
+    private String content;
 }

@@ -3,10 +3,19 @@ package com.example.newspeed.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+/**
+ * <p>좋아요 테이블 Entity</p>
+ *
+ * @author 이준영
+ */
 @Entity
 @Getter
-@Table(name = "post_like", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"}))
+@Table(
+        name = "post_likes",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"})
+)
 public class PostLike {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
@@ -28,6 +37,5 @@ public class PostLike {
     }
 
     public PostLike() {
-
     }
 }
