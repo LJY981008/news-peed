@@ -5,6 +5,7 @@ import com.example.newspeed.dto.post.*;
 
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.entity.Post;
+import com.example.newspeed.entity.User;
 import com.example.newspeed.entity.PostLike;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.enums.UserRole;
@@ -19,8 +20,12 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -60,29 +65,29 @@ public class PostService {
     // 게시글 생성
     @Transactional
     public CreatePostResponseDto createPost(String title, String content, String imageUrl, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("없음"));
+        User user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("로그인이 필요한 서비스입니다."));
         Post post = new Post(title, content, imageUrl, user);
         postRepository.save(post);
-        return new CreatePostResponseDto();
+        return new CreatePostResponseDto("게시글 생성에 성공했습니다", "/post/find-all");
     }
 
     // 게시글 삭제
     @Transactional
     public DeletePostResponseDto deletePost(Long postId, AuthUserDto authUserDto) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 게시글이 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 게시물 입니다."));
         Long loginUserId = authUserDto.getId();
         UserRole loginUserRole = authUserDto.getUserRole();
 
         if ( loginUserRole == UserRole.ADMIN ) {
             postRepository.delete(post);
-            return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.");
+            return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.","/post/find-all");
         }
         else if (!post.getUser().getUserId().equals(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다");
         }
         else {
             postRepository.delete(post);
-            return new DeletePostResponseDto("정상적으로 삭제되었습니다.");
+            return new DeletePostResponseDto("정상적으로 삭제되었습니다.","/post/find-all");
         }
     }
 
@@ -99,6 +104,14 @@ public class PostService {
     }
 
 
+    /**
+     * <p>좋아요 작동 이벤트</p>
+     * <p>한번 누르면 반대되는 값으로 변경하는 토글방식</p>
+     *
+     * @author 이준영
+     * @param postId 좋아요에 해당하는 게시글 Index
+     * @param authUserDto 로그인된 사용자 정보
+     */
     @Retryable(
             value = OptimisticLockingFailureException.class,
             maxAttempts = 3,
@@ -120,19 +133,42 @@ public class PostService {
         }
     }
 
+    /**
+     * <p>게시글의 좋아요 개수 조회</p>
+     * TODO 좋아요 음수 방어 필요
+     *
+     * @author 이준영
+     * @param postId 좋아요에 해당하는 게시글의 Index
+     * @return {@link GetLikeResponseDto}
+     */
     @Transactional(readOnly = true)
     public GetLikeResponseDto getPostLike(Long postId) {
+
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
         return new GetLikeResponseDto(post);
     }
 
+    /**
+     * <p>좋아요 테이블 생성<p/>
+     *
+     * @author 이준영
+     * @param postId 좋아요에 해당하는 게시글 Index
+     * @param authUserDto 로그인된 사용자 정보
+     */
     private void createPostLike(Long postId, AuthUserDto authUserDto) {
+
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
         User user = userRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
         PostLike postLike = new PostLike(user, post);
         likeRepository.save(postLike);
     }
 
+    /**
+     * <p>좋아요 테이블 삭제</p>
+     *
+     * @author 이준영
+     * @param postLike 좋아요 테이블
+     */
     private void deletePostLike(PostLike postLike) {
         likeRepository.delete(postLike);
     }

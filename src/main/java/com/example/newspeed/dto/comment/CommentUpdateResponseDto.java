@@ -5,14 +5,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * <p>댓글 수정 응답</p>
+ *
+ * @author 이준영
+ */
 @Getter
 public class CommentUpdateResponseDto {
-    private Long commentId;
-    private Long postId;
-    private String userName;
-    private String content;
-    private String createdAt;
-    private String modifiedAt;
+
+    private final Long commentId;
+    private final Long postId;
+    private final String userName;
+    private final String content;
+    private final String createdAt;
+    private final String modifiedAt;
 
     @Setter
     private String prevContent;

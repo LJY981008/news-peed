@@ -79,7 +79,7 @@ public class PostController {
         return ResponseEntity.status(201).body(post);
     }
     // 게시글 삭제
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/delete-posts/{postId}")
     public ResponseEntity<DeletePostResponseDto> deletePost(@PathVariable Long postId, @AuthenticationPrincipal AuthUserDto authUserDto) {
         DeletePostResponseDto deletePost = postService.deletePost(postId, authUserDto);
 
@@ -93,6 +93,16 @@ public class PostController {
        return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
     }
 
+    /**
+     * <p>좋아요 기능</p>
+     * TODO 좋아요 음수 방어 기능 추가 필요
+     * TODO 굳이 get 으로 한번 더 조회하는 건 아닌지 고려해볼 여지가 있음
+     *
+     * @author 이준영
+     * @param postId        좋아요가 눌린 게시글 Index
+     * @param authUserDto   로그인된 사용자 정보
+     * @return 상태코드와 {@link GetLikeResponseDto}
+     */
     @PatchMapping("/like")
     public ResponseEntity<GetLikeResponseDto> toggleLike(
         @RequestParam Long postId,
