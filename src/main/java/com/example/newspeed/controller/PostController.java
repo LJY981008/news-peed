@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -90,5 +91,14 @@ public class PostController {
     public ResponseEntity<FindPostResponseDto> updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequestDto updateDto) {
        FindPostResponseDto findPostResponseDto = postService.updatePost(postId, updateDto);
        return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
+    }
+
+    @PatchMapping("/like")
+    public ResponseEntity<ToggleLikeResponseDto> toggleLike(
+        @RequestParam Long postId,
+        @AuthenticationPrincipal AuthUserDto authUserDto
+    ) {
+        ToggleLikeResponseDto toggleLikeResponseDto = postService.toggleLike(postId, authUserDto);
+        return ResponseEntity.status(HttpStatus.OK).body(toggleLikeResponseDto);
     }
 }
