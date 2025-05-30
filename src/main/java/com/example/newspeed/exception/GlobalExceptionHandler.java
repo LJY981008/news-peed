@@ -94,6 +94,21 @@ public class GlobalExceptionHandler {
 
 
     /**
+     * 유효하지 않은 비밀번호 예외 처리
+     *
+     * @author 이현하
+     * @param e 발생한 예외 객체상태
+     * @return 메세지와 에러코드 반환
+     */
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(InvalidPasswordException e) {
+        Map<String, String> errorBody = new HashMap<>();
+        errorBody.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+    }
+
+
+    /**
      * 로그인 실패 시 예외 처리
      *
      * @author 이현하
@@ -106,6 +121,7 @@ public class GlobalExceptionHandler {
         errorBody.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
     }
+
 
     /**
      * 검색 결과가 없을 시 예외 처리
