@@ -41,6 +41,9 @@ public class User extends TimeStampEntity{
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
 
+    @OneToMany(mappedBy = "user")
+    private List<PostLike> postLikes;
+
     public User(String email, String password, String userName, String intro, String profileImageUrl){
         this.email = email;
         this.password = password;

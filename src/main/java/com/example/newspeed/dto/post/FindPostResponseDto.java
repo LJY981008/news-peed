@@ -14,7 +14,7 @@ public class FindPostResponseDto {
     private final String title;
     private final String contents;
     private final String postImgUrl;
-    private final Long userLikeCount;
+    private final int userLikeCount;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
