@@ -16,5 +16,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByUser_UserIdIn(List<Long> followedUserIds, Pageable pageable);
 
-    Page<Post> findAllBycreatedAt(LocalDateTime createdAt, Pageable pageable);
+    Page<Post> findAllByCreatedAtBetween(LocalDateTime startTime,LocalDateTime endTime, Pageable pageable);
 }

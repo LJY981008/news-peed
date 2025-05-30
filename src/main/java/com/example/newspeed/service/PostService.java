@@ -26,6 +26,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -45,8 +46,12 @@ public class PostService {
     public Page<FindPostResponseDto> findAllPost(Pageable pageable){
         return postRepository.findAll(pageable).map(FindPostResponseDto::findPostDto);
     }
-    public Page<FindPostResponseDto> findAllByDate(LocalDateTime createdAt, Pageable pageable) {
-        return postRepository.findAllBycreatedAt(createdAt,pageable).map(FindPostResponseDto::findPostDto);
+    // 해당 날짜의 게시글 전체 조회
+    @Transactional
+    public Page<FindPostResponseDto> findAllByDate(LocalDate createdAt, Pageable pageable) {
+        LocalDateTime startTime = createdAt.atStartOfDay();
+        LocalDateTime endTime = createdAt.plusDays(1).atStartOfDay();
+        return postRepository.findAllByCreatedAtBetween(startTime,endTime,pageable).map(FindPostResponseDto::findPostDto);
     }
 
     @Transactional
