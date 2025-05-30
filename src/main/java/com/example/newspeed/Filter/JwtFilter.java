@@ -35,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws IOException, ServletException {
         String bearerJwt = request.getHeader("Authorization");
 
-        if (bearerJwt.isBlank()) {
+        if (bearerJwt == null || bearerJwt.isEmpty()) {
             chain.doFilter(request, response);
             return;
         }
