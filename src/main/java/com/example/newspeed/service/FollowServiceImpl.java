@@ -1,5 +1,6 @@
 package com.example.newspeed.service;
 
+import com.example.newspeed.dto.comment.CommentCreateResponseDto;
 import com.example.newspeed.entity.Follow;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.InvalidRequestException;
@@ -10,15 +11,28 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 팔로우 서비스 구현
+ *
+ * @author 김도연
+ */
 @Service
 @AllArgsConstructor
 public class FollowServiceImpl implements FollowService{
     private final FollowRepository followRepository;
-    private final UserRepository usersRepository;
+    private final UserRepository userRepository;
+
+    /**
+     * <p>팔로우 생성</p>
+     *
+     * @param currentUserId     팔로우 요청한 유저식별자
+     * @param targetEmail       팔로우 대상 유저 이메일
+     * @return 없음
+     */
     @Override
     @Transactional
     public void follow(Long currentUserId, String targetEmail) {
-        User targetUser = usersRepository.findByEmail(targetEmail)
+        User targetUser = userRepository.findByEmail(targetEmail)
                 .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
         Long followedUserId = targetUser.getUserId();
         //팔로우 하려는 유저와 사용자가 동일 계정일 경우 예외처리
@@ -33,10 +47,17 @@ public class FollowServiceImpl implements FollowService{
         followRepository.save(follow);
     }
 
+    /**
+     * <p>팔로우 삭제</p>
+     *
+     * @param currentUserId     팔로우 삭제 요청한 유저식별자
+     * @param targetEmail       팔로우 삭제 대상 유저 이메일
+     * @return 없음
+     */
     @Override
     @Transactional
     public void unfollow(Long currentUserId, String targetEmail){
-        User targetUser = usersRepository.findByEmail(targetEmail)
+        User targetUser = userRepository.findByEmail(targetEmail)
                 .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
         //팔로우 하지 않은 관계에서 삭제 요청 시 예외처리
         boolean exists = followRepository.existsByFollowingUserIdAndFollowedUserId(currentUserId, targetUser.getUserId());
