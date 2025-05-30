@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "post_like")
+@Table(name = "post_like", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"}))
 public class PostLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
