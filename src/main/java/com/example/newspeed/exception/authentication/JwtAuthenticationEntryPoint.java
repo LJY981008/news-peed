@@ -23,7 +23,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        Map<String, Object> errors = Map.of("message", authException.getMessage());
+        Map<String, Object> errors = Map.of(
+                "errorMessage", authException.getMessage(),
+                "message", "인증 실패"
+        );
         String responseBody = objectMapper.writeValueAsString(errors);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

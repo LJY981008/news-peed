@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * <p>댓글 관련 컨트롤러</p>
+ *
+ * @author 이준영
+ */
 @RestController
 @RequestMapping(Const.COMMENT_URL)
 public class CommentController {
@@ -23,10 +28,11 @@ public class CommentController {
     }
 
     /**
-     * 댓글 생성
+     * <p>댓글 생성</p>
      *
-     * @param postId        댓글이 등록될 포스트의 ID
-     * @param requestDto    {@link CommentCreateRequestDto} 요청 DTO
+     * @param postId     댓글이 등록될 포스트의 ID
+     * @param requestDto {@link CommentCreateRequestDto} 요청 DTO
+     * @param userDto    로그인된 사용자 정보
      * @return {@link CommentCreateResponseDto} 반환 DTO
      */
     @PostMapping
@@ -40,9 +46,9 @@ public class CommentController {
     }
 
     /**
-     * 댓글 조회
+     * <p>댓글 조회</p>
      *
-     * @param postId    댓글을 조회할 포스트의 ID
+     * @param postId 댓글을 조회할 포스트의 ID
      * @return {@link CommentFindResponseDto} 반환 DTO 리스트
      */
     @GetMapping
@@ -53,6 +59,14 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(responseComments);
     }
 
+    /**
+     * <p>댓글 수정</p>
+     *
+     * @param commentId  댓글 Index
+     * @param requestDto 수정 내용
+     * @param userDto    로그인된 사용자 정보
+     * @return {@link CommentUpdateResponseDto}
+     */
     @PatchMapping
     public ResponseEntity<CommentUpdateResponseDto> updateComment(
             @RequestParam Long commentId,
@@ -63,12 +77,19 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
 
+    /**
+     * <p>댓글 삭제</p>
+     *
+     * @param commentId 댓글 Index
+     * @param userDto   로그인된 사용자 정보
+     * @return {@link CommentDeleteResponseDto}
+     */
     @DeleteMapping
-    public ResponseEntity<CommentRemoveResponseDto> deleteComment(
+    public ResponseEntity<CommentDeleteResponseDto> deleteComment(
             @RequestParam Long commentId,
             @AuthenticationPrincipal AuthUserDto userDto
-    ){
-        CommentRemoveResponseDto responseComment = commentService.deleteComment(commentId, userDto);
+    ) {
+        CommentDeleteResponseDto responseComment = commentService.deleteComment(commentId, userDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseComment);
     }
 }

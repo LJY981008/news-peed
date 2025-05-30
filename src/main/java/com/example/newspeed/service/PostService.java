@@ -99,6 +99,14 @@ public class PostService {
     }
 
 
+    /**
+     * <p>좋아요 작동 이벤트</p>
+     * <p>한번 누르면 반대되는 값으로 변경하는 토글방식</p>
+     *
+     * @author 이준영
+     * @param postId 좋아요에 해당하는 게시글 Index
+     * @param authUserDto 로그인된 사용자 정보
+     */
     @Retryable(
             value = OptimisticLockingFailureException.class,
             maxAttempts = 3,
@@ -120,19 +128,41 @@ public class PostService {
         }
     }
 
+    /**
+     * <p>게시글의 좋아요 개수 조회</p>
+     *
+     * @author 이준영
+     * @param postId 좋아요에 해당하는 게시글의 Index
+     * @return {@link GetLikeResponseDto}
+     */
     @Transactional(readOnly = true)
     public GetLikeResponseDto getPostLike(Long postId) {
+
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
         return new GetLikeResponseDto(post);
     }
 
+    /**
+     * <p>좋아요 테이블 생성<p/>
+     *
+     * @author 이준영
+     * @param postId 좋아요에 해당하는 게시글 Index
+     * @param authUserDto 로그인된 사용자 정보
+     */
     private void createPostLike(Long postId, AuthUserDto authUserDto) {
+
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
         User user = userRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
         PostLike postLike = new PostLike(user, post);
         likeRepository.save(postLike);
     }
 
+    /**
+     * <p>좋아요 테이블 삭제</p>
+     *
+     * @author 이준영
+     * @param postLike 좋아요 테이블
+     */
     private void deletePostLike(PostLike postLike) {
         likeRepository.delete(postLike);
     }
