@@ -7,7 +7,6 @@ import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.entity.PostLike;
-import com.example.newspeed.entity.User;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.FollowRepository;
@@ -21,14 +20,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
-import org.springframework.http.ResponseEntity;
-
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +42,11 @@ public class PostService {
 
     // 게시글 전체
     @Transactional
-    public Page<FindPostResponseDto> findPost(Pageable pageable){
+    public Page<FindPostResponseDto> findAllPost(Pageable pageable){
         return postRepository.findAll(pageable).map(FindPostResponseDto::findPostDto);
+    }
+    public Page<FindPostResponseDto> findAllByDate(LocalDateTime createdAt, Pageable pageable) {
+        return postRepository.findAllBycreatedAt(createdAt,pageable).map(FindPostResponseDto::findPostDto);
     }
 
     @Transactional
@@ -172,4 +173,6 @@ public class PostService {
     private void deletePostLike(PostLike postLike) {
         likeRepository.delete(postLike);
     }
+
+
 }

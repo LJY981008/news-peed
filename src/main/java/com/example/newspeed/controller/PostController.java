@@ -8,7 +8,6 @@ import com.example.newspeed.dto.post.CreatePostRequestDto;
 import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.*;
-import com.example.newspeed.entity.Post;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,13 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 //import java.awt.print.Pageable;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(Const.POST_URL)
@@ -54,11 +52,12 @@ public class PostController {
 
     //게시글 전체조회
     // createdAt 기준으로 정렬
-    @GetMapping("/find-all")
+    @GetMapping("/find-all/{date}")
     public ResponseEntity<Page<FindPostResponseDto>> findPost(
+            @RequestParam(required = false) LocalDateTime date,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        Page<FindPostResponseDto> findPostResponseDtoList = postService.findPost(pageable);
+        Page<FindPostResponseDto> findPostResponseDtoList = (date != null) ? postService.findAllPost(pageable) : postService.findAllByDate(date, pageable);
         return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
     }
 
