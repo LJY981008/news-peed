@@ -50,9 +50,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginUserResponseDto logIn(LoginUserRequestDto loginRequest){
 
+        // 존재하지 않는 이메일일 때 에러 반환
         User findUser = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new LoginFailedException("Invalid email or password"));
 
+        // 비밀번호 일치하지 않을 때 에러 반환
         if (!passwordEncoder.matches(loginRequest.getPassword(), findUser.getPassword())) {
             throw new LoginFailedException("Invalid email or password");
         }
