@@ -1,7 +1,6 @@
 package com.example.newspeed.exception;
 
-import com.example.newspeed.exception.exceptions.AuthenticationException;
-import com.example.newspeed.exception.exceptions.NotFoundException;
+import com.example.newspeed.exception.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import java.util.Optional;
