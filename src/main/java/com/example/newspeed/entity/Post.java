@@ -18,6 +18,9 @@ public class Post extends TimeStampEntity{
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
 
+    @OneToMany(mappedBy = "post")
+    private List<PostLike> postLikes;
+
 //    public void setUsers(User user) {
 //        this.user = user;
 //    }
