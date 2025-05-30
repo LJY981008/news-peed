@@ -130,6 +130,7 @@ public class PostService {
 
     /**
      * <p>게시글의 좋아요 개수 조회</p>
+     * TODO 좋아요 음수 방어 필요
      *
      * @author 이준영
      * @param postId 좋아요에 해당하는 게시글의 Index
