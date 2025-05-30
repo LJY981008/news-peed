@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class FindPostResponseDto {
-    private final Long userId;
+    private final Long postId;
     private final String userName;
     private final String title;
     private final String contents;
@@ -19,7 +19,7 @@ public class FindPostResponseDto {
     private LocalDateTime modifiedAt;
 
     public FindPostResponseDto(Post post) {
-        this.userId = post.getPostId();
+        this.postId = post.getPostId();
         this.userName = post.getUser().getUserName();
         this.title = post.getTitle();
         this.contents = post.getContent();

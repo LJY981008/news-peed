@@ -101,8 +101,11 @@ public class PostController {
 
     // 게시글 수정
     @PatchMapping("/post-update/{postId}")
-    public ResponseEntity<FindPostResponseDto> updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequestDto updateDto) {
-       FindPostResponseDto findPostResponseDto = postService.updatePost(postId, updateDto);
+    public ResponseEntity<FindPostResponseDto> updatePost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal AuthUserDto authUserDto ,
+            @RequestBody UpdatePostRequestDto updateDto) {
+       FindPostResponseDto findPostResponseDto = postService.updatePost(postId, authUserDto, updateDto);
        return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
     }
 
