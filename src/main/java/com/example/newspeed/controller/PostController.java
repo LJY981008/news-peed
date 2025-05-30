@@ -8,7 +8,6 @@ import com.example.newspeed.dto.post.CreatePostRequestDto;
 import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.*;
-import com.example.newspeed.entity.Post;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,13 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 //import java.awt.print.Pageable;
-import java.util.List;
+
 
 @RestController
 @RequestMapping(Const.POST_URL)
@@ -94,11 +92,12 @@ public class PostController {
     }
 
     @PatchMapping("/like")
-    public ResponseEntity<ToggleLikeResponseDto> toggleLike(
+    public ResponseEntity<GetLikeResponseDto> toggleLike(
         @RequestParam Long postId,
         @AuthenticationPrincipal AuthUserDto authUserDto
     ) {
-        ToggleLikeResponseDto toggleLikeResponseDto = postService.toggleLike(postId, authUserDto);
-        return ResponseEntity.status(HttpStatus.OK).body(toggleLikeResponseDto);
+        postService.toggleLike(postId, authUserDto);
+        GetLikeResponseDto postLike = postService.getPostLike(postId);
+        return ResponseEntity.status(HttpStatus.OK).body(postLike);
     }
 }
