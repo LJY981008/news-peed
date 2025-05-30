@@ -2,10 +2,7 @@ package com.example.newspeed.service;
 
 import com.example.newspeed.dto.user.*;
 import com.example.newspeed.entity.User;
-import com.example.newspeed.exception.exceptions.DuplicateEmailException;
-import com.example.newspeed.exception.exceptions.InvalidRequestException;
-import com.example.newspeed.exception.exceptions.LoginFailedException;
-import com.example.newspeed.exception.exceptions.NotFoundException;
+import com.example.newspeed.exception.exceptions.*;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.PasswordEncoder;
 import lombok.AllArgsConstructor;
@@ -74,16 +71,21 @@ public class UserServiceImpl implements UserService {
         } else if(name != null){
             // name으로 유저 검색
 
-            User user = userRepository.findByUserName(name)
-                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + name));
+            List<User> userList = userRepository.findByUserName(name);
 
-            return List.of(new SearchUserResponseDto(user));
+            if (userList == null || userList.isEmpty()) {
+                throw new NoResultFoundException("No search results found for the user name");
+            }
+
+            return userList.stream()
+                    .map(SearchUserResponseDto::new)
+                    .collect(Collectors.toList());
 
         } else if(email != null){
             // email로 유저 검색
 
             User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+                    .orElseThrow(() -> new NoResultFoundException("No search results found for the email"));
             return List.of(new SearchUserResponseDto(user));
 
         } else {
@@ -91,10 +93,16 @@ public class UserServiceImpl implements UserService {
 
             List<User> userList = userRepository.findAll();
 
+            if (userList == null || userList.isEmpty()) {
+                throw new NoResultFoundException("No user list found");
+            }
+
             return userList.stream()
                     .map(SearchUserResponseDto::new)
                     .collect(Collectors.toList());
         }
+
+
     }
 
 
