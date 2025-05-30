@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class FollowServiceImpl implements FollowService{
     private final FollowRepository followRepository;
-    private final UserRepository usersRepository;
+    private final UserRepository userRepository;
     @Override
     @Transactional
     public void follow(Long currentUserId, String targetEmail) {
-        User targetUser = usersRepository.findByEmail(targetEmail)
+        User targetUser = userRepository.findByEmail(targetEmail)
                 .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
         Long followedUserId = targetUser.getUserId();
         //팔로우 하려는 유저와 사용자가 동일 계정일 경우 예외처리
@@ -36,7 +36,7 @@ public class FollowServiceImpl implements FollowService{
     @Override
     @Transactional
     public void unfollow(Long currentUserId, String targetEmail){
-        User targetUser = usersRepository.findByEmail(targetEmail)
+        User targetUser = userRepository.findByEmail(targetEmail)
                 .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
         //팔로우 하지 않은 관계에서 삭제 요청 시 예외처리
         boolean exists = followRepository.existsByFollowingUserIdAndFollowedUserId(currentUserId, targetUser.getUserId());
