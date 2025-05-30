@@ -16,5 +16,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByUser_UserIdIn(List<Long> followedUserIds, Pageable pageable);
 
+    /**
+     * 게시글 날짜로 조회할때 사용하는 레파지토리
+     * @autor 김태현
+     * @param startTime
+     * @param endTime
+     * @param pageable
+     * @return
+     */
     Page<Post> findAllByCreatedAtBetween(LocalDateTime startTime,LocalDateTime endTime, Pageable pageable);
 }

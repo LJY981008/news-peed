@@ -41,37 +41,58 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 게시글 조회기능
+     *
+     * @param pageable
+     * @return 상태 코드와 게시글
+     * @author 김태현
+     */
+
     // 게시글 전체
     @Transactional
-    public Page<FindPostResponseDto> findAllPost(Pageable pageable){
-        return postRepository.findAll(pageable).map(FindPostResponseDto::findPostDto);
+    public Page<FindPostResponseDto> findAllPost(Pageable pageable) {
+        Page<Post> posts = postRepository.findAll(pageable);
+        if (posts.isEmpty()) {
+            throw new NotFoundException("해당 페이지는 존재 하지 않습니다."); // 페이지는 0부터 시작합니다.
+        }
+        return posts.map(FindPostResponseDto::findPostDto);
     }
+
     // 해당 날짜의 게시글 전체 조회
     @Transactional
     public Page<FindPostResponseDto> findAllByDate(LocalDate createdAt, Pageable pageable) {
         LocalDateTime startTime = createdAt.atStartOfDay();
         LocalDateTime endTime = createdAt.plusDays(1).atStartOfDay();
-        return postRepository.findAllByCreatedAtBetween(startTime,endTime,pageable).map(FindPostResponseDto::findPostDto);
+        Page<Post> posts = postRepository.findAllByCreatedAtBetween(startTime, endTime, pageable);
+        if (posts.isEmpty()) {
+            throw new NotFoundException(createdAt + " 날짜에 만들어진 게시물이 없습니다.");
+        }
+        return posts.map(FindPostResponseDto::findPostDto);
     }
 
+    // 게시글 단건 조회
     @Transactional
-    public Page<FindPostResponseDto> findFollowingPosts(Long currentUserId, Pageable pageable){
+    public FindPostResponseDto findById(Long userId) {
+        Post findPost = postRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("존재 하지 않는 게시글 입니다."));
+        return new FindPostResponseDto(findPost);
+    }
+
+
+    @Transactional
+    public Page<FindPostResponseDto> findFollowingPosts(Long currentUserId, Pageable pageable) {
         List<Long> followedUserIds = followRepository.findFollowedUserIdsByFollowingUserId(currentUserId);
 
         return postRepository.findByUser_UserIdIn(followedUserIds, pageable)
                 .map(FindPostResponseDto::findPostDto);
     }
 
-    // 게시글 단건 조회
-    @Transactional
-    public FindPostResponseDto findById(Long userId) {
-        Post findPost = postRepository.findById(userId).orElseThrow(() -> new NotFoundException("없음"));
-        return new FindPostResponseDto(findPost);
-    }
+
     // 게시글 생성
     @Transactional
     public CreatePostResponseDto createPost(String title, String content, String imageUrl, Long userId) {
-        User user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("로그인이 필요한 서비스입니다."));
+        User user = usersRepository.findById(userId).orElseThrow(() -> new NotFoundException("로그인이 필요한 서비스입니다."));
         Post post = new Post(title, content, imageUrl, user);
         postRepository.save(post);
         return new CreatePostResponseDto("게시글 생성에 성공했습니다", "/post/find-all");
@@ -84,25 +105,35 @@ public class PostService {
         Long loginUserId = authUserDto.getId();
         UserRole loginUserRole = authUserDto.getUserRole();
 
-        if ( loginUserRole == UserRole.ADMIN ) {
+        if (loginUserRole == UserRole.ADMIN) {
             postRepository.delete(post);
-            return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.","/post/find-all");
-        }
-        else if (!post.getUser().getUserId().equals(loginUserId)) {
+            return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.", "/post/find-all");
+        } else if (!post.getUser().getUserId().equals(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다");
-        }
-        else {
+        } else {
             postRepository.delete(post);
-            return new DeletePostResponseDto("정상적으로 삭제되었습니다.","/post/find-all");
+            return new DeletePostResponseDto("정상적으로 삭제되었습니다.", "/post/find-all");
         }
     }
+
+    /**
+     * 게시글 수정 기능
+     *
+     * @param postId
+     * @param authUserDto
+     * @param updateDto
+     * @return 상태코드와 수정된 제목과 컨텐츠를 반환
+     * @author 김태현
+     */
 
     // 게시글 수정
     @Transactional
     public FindPostResponseDto updatePost(Long postId, AuthUserDto authUserDto, UpdatePostRequestDto updateDto) {
-        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("수정할 게시글을 찾지 못했습니다."));
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("수정할 게시글을 찾지 못했습니다."));
+
         Long loginUserId = authUserDto.getId(); // 로그인 유저 id 검사
-        if(!findPost.getUser().getUserId().equals(loginUserId)) {
+        if (!findPost.getUser().getUserId().equals(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 글만 수정할 수 있습니다.");
         }
         findPost.updatePost(updateDto);
@@ -114,9 +145,9 @@ public class PostService {
      * <p>좋아요 작동 이벤트</p>
      * <p>한번 누르면 반대되는 값으로 변경하는 토글방식</p>
      *
-     * @author 이준영
-     * @param postId 좋아요에 해당하는 게시글 Index
+     * @param postId      좋아요에 해당하는 게시글 Index
      * @param authUserDto 로그인된 사용자 정보
+     * @author 이준영
      */
     @Retryable(
             value = OptimisticLockingFailureException.class,
@@ -129,7 +160,7 @@ public class PostService {
         Optional<PostLike> postLike = likeRepository.findByPostIdAndUserId(postId, authUserDto.getId());
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
 
-        if(postLike.isPresent()) {
+        if (postLike.isPresent()) {
             PostLike postLikeEntity = postLike.get();
             likeRepository.updateLikeStatus(post, false);
             deletePostLike(postLikeEntity);
@@ -143,9 +174,9 @@ public class PostService {
      * <p>게시글의 좋아요 개수 조회</p>
      * TODO 좋아요 음수 방어 필요
      *
-     * @author 이준영
      * @param postId 좋아요에 해당하는 게시글의 Index
      * @return {@link GetLikeResponseDto}
+     * @author 이준영
      */
     @Transactional(readOnly = true)
     public GetLikeResponseDto getPostLike(Long postId) {
@@ -157,9 +188,9 @@ public class PostService {
     /**
      * <p>좋아요 테이블 생성<p/>
      *
-     * @author 이준영
-     * @param postId 좋아요에 해당하는 게시글 Index
+     * @param postId      좋아요에 해당하는 게시글 Index
      * @param authUserDto 로그인된 사용자 정보
+     * @author 이준영
      */
     private void createPostLike(Long postId, AuthUserDto authUserDto) {
 
@@ -172,8 +203,8 @@ public class PostService {
     /**
      * <p>좋아요 테이블 삭제</p>
      *
-     * @author 이준영
      * @param postLike 좋아요 테이블
+     * @author 이준영
      */
     private void deletePostLike(PostLike postLike) {
         likeRepository.delete(postLike);
