@@ -1,6 +1,5 @@
 package com.example.newspeed.repository;
 
-import aj.org.objectweb.asm.commons.Remapper;
 import com.example.newspeed.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -18,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     /**
      * 게시글 날짜로 조회할때 사용하는 레파지토리
-     * @autor 김태현
+     * @author 김태현
      * @param startTime
      * @param endTime
      * @param pageable
