@@ -6,6 +6,7 @@ import com.example.newspeed.entity.Comment;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.AuthenticationException;
+import com.example.newspeed.exception.exceptions.InvalidRequestException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.CommentRepository;
 import com.example.newspeed.repository.PostRepository;
@@ -95,7 +96,7 @@ public class CommentService {
 
         String prevContent = findComment.getContent();
         if (prevContent.equals(requestDto.getContent()))
-            throw new IllegalArgumentException("변경할 내용이 없습니다.");
+            throw new InvalidRequestException("Same Prev Conmment");
 
         findComment.updateContent(requestDto.getContent());
         commentRepository.save(findComment);
