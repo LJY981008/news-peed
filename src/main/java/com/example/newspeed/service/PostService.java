@@ -8,6 +8,7 @@ import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
+import com.example.newspeed.repository.FollowRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -26,11 +27,20 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository usersRepository;
+    private final FollowRepository followRepository;
 
     // 게시글 전체
     @Transactional
     public Page<FindPostResponseDto> findPost(Pageable pageable){
         return postRepository.findAll(pageable).map(FindPostResponseDto::findPostDto);
+    }
+
+    @Transactional
+    public Page<FindPostResponseDto> findFollowingPosts(Long currentUserId, Pageable pageable){
+        List<Long> followedUserIds = followRepository.findFollowedUserIdsByFollowingUserId(currentUserId);
+
+        return postRepository.findByUser_UserIdIn(followedUserIds, pageable)
+                .map(FindPostResponseDto::findPostDto);
     }
 
     // 게시글 단건 조회

@@ -9,6 +9,7 @@ import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.*;
 import com.example.newspeed.entity.Post;
+import com.example.newspeed.service.FollowServiceImpl;
 import com.example.newspeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final FollowServiceImpl followService;
 
     /* 토큰 설명
         private final JwtUtil jwtUtil;
@@ -58,6 +60,17 @@ public class PostController {
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
         Page<FindPostResponseDto> findPostResponseDtoList = postService.findPost(pageable);
+        return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("/find-follow")
+    public ResponseEntity<Page<FindPostResponseDto>> findFollowingPost(
+            @AuthenticationPrincipal AuthUserDto userDto,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable){
+        Long currentUserId = userDto.getId();
+        Page<FindPostResponseDto> findPostResponseDtoList = postService.findFollowingPosts(currentUserId, pageable);
+
         return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
     }
 
