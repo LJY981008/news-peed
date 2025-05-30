@@ -5,6 +5,7 @@ import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.*;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.PasswordEncoder;
+import com.example.newspeed.util.PasswordValidator;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.NotFound;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
 
+    /**
+     * <p>회원 가입</p>
+     *
+     * @author 이현하
+     * @param signupRequest 요청 DTO
+     * @return SignupUserResponseDto 회원 가입한 유저 정보
+     */
     @Override
     @Transactional
     public SignupUserResponseDto signUp(SignupUserRequestDto signupRequest){
@@ -31,8 +39,16 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException("Email already in use");
         }
 
+        String rawPassword = signupRequest.getPassword();
+
+        // 비밀번호 valid 확인
+        if (!PasswordValidator.isValid(rawPassword)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character");
+        }
+
         // 비밀번호 encoding
-        final String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+        final String encodedPassword = passwordEncoder.encode(rawPassword);
 
         User user = new User(
                 signupRequest.getEmail(), encodedPassword, signupRequest.getUserName(),
@@ -43,7 +59,13 @@ public class UserServiceImpl implements UserService {
         return new SignupUserResponseDto(savedUser);
     }
 
-
+    /**
+     * <p>로그인</p>
+     *
+     * @author 이현하
+     * @param loginRequest 요청 DTO
+     * @return LoginUserResponseDto 로그인한 유저 정보
+     */
     @Override
     public LoginUserResponseDto logIn(LoginUserRequestDto loginRequest){
 
@@ -60,6 +82,13 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    /**
+     * <p>유저 검색</p>
+     *
+     * @author 이현하
+     * @param name 유저 이름, email 유저 이메일
+     * @return List<SearchUserResponseDto> 검색된 유저 정보 리스트
+     */
     @Override
     public List<SearchUserResponseDto> search(String name, String email){
 

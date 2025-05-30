@@ -6,6 +6,11 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/**
+ * 게시글 조회 관련 Dto
+ * @author 김태현
+ */
+
 @Getter
 @AllArgsConstructor
 public class FindPostResponseDto {

@@ -11,6 +11,7 @@ import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.CommentRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
+import com.example.newspeed.util.CommentMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +55,7 @@ public class CommentService {
         Comment comment = new Comment(requestDto.getContent(), findPost, user);
         commentRepository.save(comment);
 
-        CommentCreateResponseDto responseDto = new CommentCreateResponseDto(comment);
+        CommentCreateResponseDto responseDto = CommentMapper.toDto(comment, CommentCreateResponseDto.class);
         return responseDto;
     }
 
@@ -72,7 +73,7 @@ public class CommentService {
 
         List<CommentFindResponseDto> responseDtoList = comments
                 .stream()
-                .map(CommentFindResponseDto::new)
+                .map(comment -> CommentMapper.toDto(comment, CommentFindResponseDto.class))
                 .toList();
         return responseDtoList;
     }
@@ -101,7 +102,7 @@ public class CommentService {
         findComment.updateContent(requestDto.getContent());
         commentRepository.save(findComment);
 
-        CommentUpdateResponseDto responseDto = new CommentUpdateResponseDto(findComment);
+        CommentUpdateResponseDto responseDto = CommentMapper.toDto(findComment, CommentUpdateResponseDto.class);
         responseDto.setPrevContent(prevContent);
 
         return responseDto;
@@ -120,7 +121,7 @@ public class CommentService {
         Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
         verifyWriterAuthorities(findComment, userDto);
 
-        CommentDeleteResponseDto responseDto = new CommentDeleteResponseDto(findComment);
+        CommentDeleteResponseDto responseDto = CommentMapper.toDto(findComment, CommentDeleteResponseDto.class);
         commentRepository.delete(findComment);
 
         return responseDto;
