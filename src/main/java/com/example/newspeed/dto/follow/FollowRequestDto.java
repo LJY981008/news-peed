@@ -4,6 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
+/**
+ * <p>follow 요청</p>
+ *
+ * @author 김도연
+ */
 @Getter
 public class FollowRequestDto {
     @NotBlank(message = "이메일은 필수 입력사항입니다.")

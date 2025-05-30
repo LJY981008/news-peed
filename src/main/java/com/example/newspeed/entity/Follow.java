@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * <p>follow entity</p>
+ *
+ * @author 김도연
+ */
 @Getter
 @Entity
 @NoArgsConstructor
