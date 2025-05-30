@@ -11,12 +11,15 @@ import java.util.List;
 @Table(name = "posts")
 public class Post extends TimeStampEntity{
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "post")
+    private List<PostLike> postLikes;
 
 //    public void setUsers(User user) {
 //        this.user = user;
@@ -33,8 +36,8 @@ public class Post extends TimeStampEntity{
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = true)
-    private Long userLikeCount;
+    @Column(columnDefinition = "integer default 0")
+    private int userLikeCount = 0;
 
     @Column(nullable = false)
     private boolean isUserLiked;
@@ -55,5 +58,12 @@ public class Post extends TimeStampEntity{
     public void updatePost(UpdatePostRequestDto updateDto) {
         this.title = updateDto.getTitle();
         this.content = updateDto.getContents();
+    }
+
+    public void updateLike(boolean trigger){
+        this.userLikeCount = trigger ?  this.userLikeCount + 1 : this.userLikeCount - 1;
+        if(this.userLikeCount < 0){
+            this.userLikeCount = 0;
+        }
     }
 }

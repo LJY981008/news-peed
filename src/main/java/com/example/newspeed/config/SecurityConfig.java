@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, Const.COMMENT_URL).permitAll()
                         .requestMatchers(HttpMethod.POST, Const.COMMENT_URL).hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, Const.COMMENT_URL).hasRole("USER")
-                        .requestMatchers(HttpMethod.PATCH, Const.COMMENT_URL).hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.PATCH, Const.COMMENT_URL).hasRole("USER")
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 유저 인가

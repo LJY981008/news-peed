@@ -1,5 +1,6 @@
 package com.example.newspeed.controller;
 
+import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.follow.FollowRequestDto;
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.exception.exceptions.AuthenticationException;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/news-peed/follows")
+@RequestMapping(Const.FOLLOWS_URL)
 public class FollowController {
     private final FollowService followService;
 

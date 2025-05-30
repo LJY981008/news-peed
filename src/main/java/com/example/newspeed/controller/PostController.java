@@ -1,6 +1,7 @@
 package com.example.newspeed.controller;
 
 
+import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.dto.post.FindPostResponseDto;
 import com.example.newspeed.dto.post.CreatePostRequestDto;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/news-peed/post")
+@RequestMapping(Const.POST_URL)
 @RequiredArgsConstructor
 public class PostController {
 
@@ -89,5 +91,14 @@ public class PostController {
     public ResponseEntity<FindPostResponseDto> updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequestDto updateDto) {
        FindPostResponseDto findPostResponseDto = postService.updatePost(postId, updateDto);
        return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
+    }
+
+    @PatchMapping("/like")
+    public ResponseEntity<ToggleLikeResponseDto> toggleLike(
+        @RequestParam Long postId,
+        @AuthenticationPrincipal AuthUserDto authUserDto
+    ) {
+        ToggleLikeResponseDto toggleLikeResponseDto = postService.toggleLike(postId, authUserDto);
+        return ResponseEntity.status(HttpStatus.OK).body(toggleLikeResponseDto);
     }
 }
