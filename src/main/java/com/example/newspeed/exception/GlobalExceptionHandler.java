@@ -1,6 +1,7 @@
 package com.example.newspeed.exception;
 
 import com.example.newspeed.exception.exceptions.AuthenticationException;
+import com.example.newspeed.exception.exceptions.InvalidRequestException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +66,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getStatusCode()).body(errors);
     }
 
-
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidRequestException(InvalidRequestException e) {
+        Map<String, Object> errors = Map.of("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
 
 }
