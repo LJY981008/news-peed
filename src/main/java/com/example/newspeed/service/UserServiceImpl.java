@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         if(name != null && email != null){
             // name, email 동시 검색 비허용
 
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name, email 동시 검색은 허용되지 않습니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search by both name and email is not supported");
 
         } else if(name != null){
             // name으로 유저 검색
@@ -101,8 +101,6 @@ public class UserServiceImpl implements UserService {
                     .map(SearchUserResponseDto::new)
                     .collect(Collectors.toList());
         }
-
-
     }
 
 
