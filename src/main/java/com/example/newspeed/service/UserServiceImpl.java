@@ -3,9 +3,13 @@ package com.example.newspeed.service;
 import com.example.newspeed.dto.user.*;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.DuplicateEmailException;
+import com.example.newspeed.exception.exceptions.InvalidRequestException;
+import com.example.newspeed.exception.exceptions.LoginFailedException;
+import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.PasswordEncoder;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.NotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,10 +51,10 @@ public class UserServiceImpl implements UserService {
     public LoginUserResponseDto logIn(LoginUserRequestDto loginRequest){
 
         User findUser = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + loginRequest.getEmail()));
+                .orElseThrow(() -> new LoginFailedException("Invalid email or password"));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), findUser.getPassword())) {
-            throw new IllegalArgumentException("Not exist email or password");
+            throw new LoginFailedException("Invalid email or password");
         }
 
         return new LoginUserResponseDto(findUser);

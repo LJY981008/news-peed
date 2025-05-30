@@ -2,6 +2,7 @@ package com.example.newspeed.exception;
 
 import com.example.newspeed.exception.exceptions.AuthenticationException;
 import com.example.newspeed.exception.exceptions.DuplicateEmailException;
+import com.example.newspeed.exception.exceptions.LoginFailedException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,20 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(DuplicateEmailException e) {
+        Map<String, String> errorBody = new HashMap<>();
+        errorBody.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+    }
+
+
+    /**
+     * 로그인 실패 시 예외 처리
+     *
+     * @param e 발생한 예외 객체상태
+     * @return 메세지와 에러코드 반환
+     */
+    @ExceptionHandler(LoginFailedException.class)
+    public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(LoginFailedException e) {
         Map<String, String> errorBody = new HashMap<>();
         errorBody.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
