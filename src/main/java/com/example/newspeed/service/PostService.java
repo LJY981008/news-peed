@@ -62,7 +62,17 @@ public class PostService {
         Post findPost = postRepository.findById(userId).orElseThrow(() -> new NotFoundException("없음"));
         return new FindPostResponseDto(findPost);
     }
-    // 게시글 생성
+
+    /**
+     * <p>게시글 생성 메서드</p>
+     *
+     * @param title 게시글 제목
+     * @param content 게시글 내용
+     * @param imageUrl 게시글 이미지
+     * @param userId 게시글생성하는 유저의 id
+     * @return 성공시 반환되는 {@link CreatePostResponseDto} 성공메세지와 게시글 URL
+     * @author 윤희준
+     */
     @Transactional
     public CreatePostResponseDto createPost(String title, String content, String imageUrl, Long userId) {
         User user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("로그인이 필요한 서비스입니다."));
@@ -71,7 +81,15 @@ public class PostService {
         return new CreatePostResponseDto("게시글 생성에 성공했습니다", "/post/find-all");
     }
 
-    // 게시글 삭제
+
+    /**
+     * <p>게시글 삭제 메서드</p>
+     *
+     * @param postId 게시글의 pk값
+     * @param authUserDto 인증된 사용자 정보를 담은 {@link AuthUserDto}
+     * @return 게시글의 존재여부, 사용자의 권한여부 비교후 삭제진행
+     * @author 윤희준
+     */
     @Transactional
     public DeletePostResponseDto deletePost(Long postId, AuthUserDto authUserDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 게시물 입니다."));

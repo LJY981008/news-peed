@@ -80,7 +80,16 @@ public class PostController {
         return new ResponseEntity<>(findDto, HttpStatus.OK);
 
     }
-    // 게시글 생성
+
+    /**
+     * <p>게시글 생성</p>
+     *
+     *
+     * @param dto 게시글 생성에 필요한 title, content, imageUrl {@link CreatePostRequestDto}
+     * @param userDto 인증된 사용자 정보 {@link AuthUserDto}
+     * @return 생성 성공시 {@code 201 CREATED} {@link CreatePostResponseDto} 포함하는 {@link ResponseEntity}
+     * @author 윤희준
+     */
     @PostMapping("/create-posts")
     public ResponseEntity<CreatePostResponseDto> createPost(
             @RequestBody CreatePostRequestDto dto,
@@ -89,7 +98,13 @@ public class PostController {
 
         return ResponseEntity.status(201).body(post);
     }
-    // 게시글 삭제
+
+    /**
+     * <p>게시글 삭제</p>
+     * @param postId 게시글의 pk값
+     * @param authUserDto 인증된 사용자 정보 {@link AuthUserDto}
+     * @return 삭제 성공시 {@code 200 OK}, {@link DeletePostResponseDto} 를 포함하는 {@link ResponseEntity}
+     */
     @DeleteMapping("/delete-posts/{postId}")
     public ResponseEntity<DeletePostResponseDto> deletePost(@PathVariable Long postId, @AuthenticationPrincipal AuthUserDto authUserDto) {
         DeletePostResponseDto deletePost = postService.deletePost(postId, authUserDto);
