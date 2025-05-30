@@ -9,6 +9,7 @@ import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.*;
 import com.example.newspeed.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,18 +87,38 @@ public class PostController {
         return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
     }
 
+    // 게시글 단건 조회
+    @GetMapping
+    public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam Long postId) {
+        FindPostResponseDto findDto = postService.findById(postId);
+        return new ResponseEntity<>(findDto, HttpStatus.OK);
 
-    // 게시글 생성
+    }
+
+    /**
+     * <p>게시글 생성</p>
+     *
+     *
+     * @param dto 게시글 생성에 필요한 title, content, imageUrl {@link CreatePostRequestDto}
+     * @param userDto 인증된 사용자 정보 {@link AuthUserDto}
+     * @return 생성 성공시 {@code 201 CREATED} {@link CreatePostResponseDto} 포함하는 {@link ResponseEntity}
+     * @author 윤희준
+     */
     @PostMapping("/create-posts")
     public ResponseEntity<CreatePostResponseDto> createPost(
-            @RequestBody CreatePostRequestDto dto,
+            @RequestBody @Valid CreatePostRequestDto dto,
             @AuthenticationPrincipal AuthUserDto userDto) {
-        CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl(), userDto.getId());
+        CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl(),userDto);
 
         return ResponseEntity.status(201).body(post);
     }
 
-    // 게시글 삭제
+    /**
+     * <p>게시글 삭제</p>
+     * @param postId 게시글의 pk값
+     * @param authUserDto 인증된 사용자 정보 {@link AuthUserDto}
+     * @return 삭제 성공시 {@code 200 OK}, {@link DeletePostResponseDto} 를 포함하는 {@link ResponseEntity}
+     */
     @DeleteMapping("/delete-posts/{postId}")
     public ResponseEntity<DeletePostResponseDto> deletePost(@PathVariable Long postId, @AuthenticationPrincipal AuthUserDto authUserDto) {
         DeletePostResponseDto deletePost = postService.deletePost(postId, authUserDto);

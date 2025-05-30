@@ -9,6 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * <p>게시글 Repository</p>
+ *
+ * @author 윤희준
+ */
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 

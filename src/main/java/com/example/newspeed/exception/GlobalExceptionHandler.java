@@ -58,6 +58,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
     }
 
+    /**{@link ResponseStatusException} 예외처리
+     *
+     * @param e 예외 객체
+     * @return 상태메세지와 에러코드
+     * @author 윤희준
+     */
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException e) {
         String message = Optional.ofNullable(e.getReason()).orElse("알 수 없는 오류가 발생했습니다.");
