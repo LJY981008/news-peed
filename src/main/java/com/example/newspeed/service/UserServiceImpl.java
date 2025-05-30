@@ -22,6 +22,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
 
+    /**
+     * <p>회원 가입</p>
+     *
+     * @author 이현하
+     * @param signupRequest 요청 DTO
+     * @return SignupUserResponseDto 회원 가입한 유저 정보
+     */
     @Override
     @Transactional
     public SignupUserResponseDto signUp(SignupUserRequestDto signupRequest){
@@ -43,7 +50,13 @@ public class UserServiceImpl implements UserService {
         return new SignupUserResponseDto(savedUser);
     }
 
-
+    /**
+     * <p>로그인</p>
+     *
+     * @author 이현하
+     * @param loginRequest 요청 DTO
+     * @return LoginUserResponseDto 로그인한 유저 정보
+     */
     @Override
     public LoginUserResponseDto logIn(LoginUserRequestDto loginRequest){
 
@@ -60,6 +73,13 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    /**
+     * <p>유저 검색</p>
+     *
+     * @author 이현하
+     * @param name 유저 이름, email 유저 이메일
+     * @return List<SearchUserResponseDto> 검색된 유저 정보 리스트
+     */
     @Override
     public List<SearchUserResponseDto> search(String name, String email){
 

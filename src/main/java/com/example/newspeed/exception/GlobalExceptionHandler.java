@@ -71,9 +71,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
+
     /**
      * 중복된 Email에 대한 예외 처리
      *
+     * @author 이현하
      * @param e 발생한 예외 객체상태
      * @return 메세지와 에러코드 반환
      */
@@ -88,6 +90,7 @@ public class GlobalExceptionHandler {
     /**
      * 로그인 실패 시 예외 처리
      *
+     * @author 이현하
      * @param e 발생한 예외 객체상태
      * @return 메세지와 에러코드 반환
      */
@@ -101,8 +104,9 @@ public class GlobalExceptionHandler {
     /**
      * 검색 결과가 없을 시 예외 처리
      *
+     * @author 이현하
      * @param e 발생한 예외 객체상태
-     * @return 메세지와 OK 코드 반환
+     * @return 메세지와 OK 상태 코드 반환
      */
     @ExceptionHandler(NoResultFoundException.class)
     public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(NoResultFoundException e) {

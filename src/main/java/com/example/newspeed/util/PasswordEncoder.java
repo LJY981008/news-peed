@@ -3,6 +3,11 @@ package com.example.newspeed.util;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>유저 비밀번호 인코더</p>
+ *
+ * @author 이현하
+ */
 @Component
 public class PasswordEncoder {
 
