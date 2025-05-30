@@ -5,6 +5,7 @@ import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.*;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.PasswordEncoder;
+import com.example.newspeed.util.PasswordValidator;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.NotFound;
 import org.springframework.http.HttpStatus;
@@ -38,8 +39,16 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException("Email already in use");
         }
 
+        String rawPassword = signupRequest.getPassword();
+
+        // 비밀번호 valid 확인
+        if (!PasswordValidator.isValid(rawPassword)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character");
+        }
+
         // 비밀번호 encoding
-        final String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+        final String encodedPassword = passwordEncoder.encode(rawPassword);
 
         User user = new User(
                 signupRequest.getEmail(), encodedPassword, signupRequest.getUserName(),
