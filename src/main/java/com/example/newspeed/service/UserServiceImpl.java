@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
         // 중복된 이메일로 가입 시 에러 반환
         if(userRepository.existsByEmail(signupRequest.getEmail())){
-            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+            throw new DuplicateEmailException("Email already in use");
         }
 
         // 비밀번호 encoding
