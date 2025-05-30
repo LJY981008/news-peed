@@ -62,6 +62,17 @@ public class PostController {
         return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
     }
 
+    @GetMapping("/find-follow")
+    public ResponseEntity<Page<FindPostResponseDto>> findFollowingPost(
+            @AuthenticationPrincipal AuthUserDto userDto,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable){
+        Long currentUserId = userDto.getId();
+        Page<FindPostResponseDto> findPostResponseDtoList = postService.findFollowingPosts(currentUserId, pageable);
+
+        return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
+    }
+
     // 게시글 단건 조회
     @GetMapping
     public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam Long postId) {

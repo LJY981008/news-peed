@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FollowRepository extends JpaRepository<Follow, Long> {
+public interface FollowRepository extends JpaRepository<Follow, Long>, FollowRepositoryCustom{
     List<Follow> findAllByFollowingUserId(Long followingUserId);
 
     List<Follow> findAllByFollowedUserId(Long followedUserId);
@@ -18,7 +18,4 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     Long countByFollowedUserId(Long followedUserId);
     boolean existsByFollowingUserIdAndFollowedUserId(Long followingUserId, Long followedUserId);
     void deleteByFollowingUserIdAndFollowedUserId(Long followingUserId, Long followedUserId);
-
-    @Query("SELECT f.followedUserId FROM Follow f WHERE f.followingUserId = :currentUserId")
-    List<Long> findFollowedUserIdsByFollowingUserId(@Param("currentUserId") Long currentUserId);
 }
