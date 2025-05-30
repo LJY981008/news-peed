@@ -73,8 +73,12 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public FindPostResponseDto updatePost(Long postId, UpdatePostRequestDto updateDto) {
-        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("없음"));
+    public FindPostResponseDto updatePost(Long postId, AuthUserDto authUserDto,UpdatePostRequestDto updateDto) {
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("수정할 게시글을 찾지 못했습니다."));
+        Long loginUserId = authUserDto.getId(); // 로그인 유저 id 검사
+        if(!findPost.getUser().getUserId().equals(loginUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 글만 수정할 수 있습니다.");
+        }
         findPost.updatePost(updateDto);
         return new FindPostResponseDto(findPost);
     }
