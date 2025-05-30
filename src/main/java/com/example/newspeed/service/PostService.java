@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
-    private final UserRepository usersRepository;
+    private final UserRepository userRepository;
 
     // 게시글 전체
     @Transactional
@@ -45,7 +45,7 @@ public class PostService {
     // 게시글 생성
     @Transactional
     public CreatePostResponseDto createPost(String title, String content, String imageUrl, Long userId) {
-        User user = usersRepository.findById(userId).orElseThrow(()->new NotFoundException("없음"));
+        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("없음"));
         Post post = new Post(title, content, imageUrl, user);
         postRepository.save(post);
         return new CreatePostResponseDto();
@@ -81,11 +81,29 @@ public class PostService {
 
     @Transactional
     public ToggleLikeResponseDto toggleLike(Long postId, AuthUserDto authUserDto) {
+        Optional<PostLike> postLike = likeRepository.findByPostIdAndUserId(postId, authUserDto.getId());
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
-        User user = usersRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
 
+        if(postLike.isPresent()) {
+            PostLike postLikeEntity = postLike.get();
+            postLikeEntity.toggleLike();
+            deletePostLike(postLikeEntity);
+        } else {
+            PostLike postLikeEntity = createPostLike(postId, authUserDto);
+            postLikeEntity.toggleLike();
+        }
+        return new ToggleLikeResponseDto(post);
+    }
 
+    private PostLike createPostLike(Long postId, AuthUserDto authUserDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
+        User user = userRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
         PostLike postLike = new PostLike(user, post);
-        return null;
+
+        return likeRepository.save(postLike);
+    }
+
+    private void deletePostLike(PostLike postLike) {
+        likeRepository.delete(postLike);
     }
 }

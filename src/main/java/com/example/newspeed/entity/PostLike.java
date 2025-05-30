@@ -27,7 +27,12 @@ public class PostLike {
         this.post = post;
     }
 
+    public PostLike() {
+
+    }
+
     public void toggleLike(){
         this.isLiked = !this.isLiked;
+        post.updateLike(this.isLiked);
     }
 }

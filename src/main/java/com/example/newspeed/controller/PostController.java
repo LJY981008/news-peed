@@ -98,7 +98,7 @@ public class PostController {
         @RequestParam Long postId,
         @AuthenticationPrincipal AuthUserDto authUserDto
     ) {
-        postService.toggleLike(postId, authUserDto);
-        return null;//ResponseEntity.status(HttpStatus.OK).body();
+        ToggleLikeResponseDto toggleLikeResponseDto = postService.toggleLike(postId, authUserDto);
+        return ResponseEntity.status(HttpStatus.OK).body(toggleLikeResponseDto);
     }
 }
