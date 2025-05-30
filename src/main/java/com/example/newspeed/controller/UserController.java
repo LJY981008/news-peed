@@ -42,11 +42,11 @@ public class UserController {
      */
 
     /**
-     * 회원 가입
-     * @param signupRequest
-     * { email, password, userName, intro, profileImageUrl }
-     * @return SignupUserResponseDto
-     * { id, email, password, userName, intro, profileImageUrl, createdAt, updatedAt }
+     * <p>회원 가입</p>
+     *
+     * @author 이현하
+     * @param signupRequest 요청 DTO
+     * @return SignupUserResponseDto 회원 가입한 유저 정보
      */
     @PostMapping("/signup")
     public ResponseEntity<SignupUserResponseDto> signUp(@Valid @RequestBody SignupUserRequestDto signupRequest){
@@ -58,11 +58,12 @@ public class UserController {
     }
 
     /**
-     * 로그인
-     * @param loginRequest
+     * <p>로그인</p>
+     *
+     * @author 이현하
+     * @param loginRequest 요청 DTO
      * { email, password }
-     * @return LoginUserResponseDto, token
-     * { id, email, userName, intro, profileImageUrl, createdAt, updatedAt }
+     * @return LoginUserResponseDto 로그인한 유저 정보, token 생성된 인증 정보
      */
     @GetMapping("/login")
     public ResponseEntity<LoginUserResponseDto> logIn(@Valid @RequestBody LoginUserRequestDto loginRequest){
@@ -78,11 +79,12 @@ public class UserController {
     }
 
     /**
-     * 유저 검색 (전체 검색, 이름 검색, 이메일 검색)
-     * @param name 이름
-     * @param email 이메일
-     * @return SearchUserResponseDto
-     * { id, email, userName, intro, profileImageUrl }
+     * <p>유저 검색 (전체 검색, 이름 검색, 이메일 검색)</p>
+     *
+     * @author 이현하
+     * @param name 검색할 유저 이름
+     * @param email 검색할 이메일
+     * @return List<SearchUserResponseDto> 검색된 유저 정보 리스트
      */
     @GetMapping("/search")
     public ResponseEntity<List<SearchUserResponseDto>> search(@RequestParam(required = false) String name,
