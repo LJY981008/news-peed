@@ -2,6 +2,11 @@ package com.example.newspeed.dto.post;
 
 import lombok.Getter;
 
+/**
+ * 게시글 수정 관련 Dto
+ * @author 김태현
+ */
+
 @Getter
 public class UpdatePostRequestDto {
 
