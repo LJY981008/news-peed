@@ -9,20 +9,12 @@ import lombok.Getter;
  * @author 이준영
  */
 @Getter
-public class CommentFindResponseDto {
-
-    private final Long commentId;
-    private final Long postId;
-    private final String userName;
-    private final String content;
+public class CommentFindResponseDto extends BaseCommentResponseDto {
     private final String createdAt;
     private final String modifiedAt;
 
     public CommentFindResponseDto(Comment comment) {
-        this.commentId = comment.getCommentId();
-        this.postId = comment.getPost().getPostId();
-        this.userName = comment.getUser().getUserName();
-        this.content = comment.getContent();
+        super(comment);
         this.createdAt = comment.getCreatedAt().toString();
         this.modifiedAt = comment.getModifiedAt().toString();
     }

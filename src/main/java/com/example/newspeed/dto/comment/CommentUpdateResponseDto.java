@@ -11,12 +11,8 @@ import lombok.Setter;
  * @author 이준영
  */
 @Getter
-public class CommentUpdateResponseDto {
+public class CommentUpdateResponseDto extends BaseCommentResponseDto {
 
-    private final Long commentId;
-    private final Long postId;
-    private final String userName;
-    private final String content;
     private final String createdAt;
     private final String modifiedAt;
 
@@ -24,10 +20,7 @@ public class CommentUpdateResponseDto {
     private String prevContent;
 
     public CommentUpdateResponseDto(Comment comment) {
-        this.commentId = comment.getCommentId();
-        this.postId = comment.getPost().getPostId();
-        this.userName = comment.getUser().getUserName();
-        this.content = comment.getContent();
+        super(comment);
         this.createdAt = comment.getCreatedAt().toString();
         this.modifiedAt = comment.getModifiedAt().toString();
     }
