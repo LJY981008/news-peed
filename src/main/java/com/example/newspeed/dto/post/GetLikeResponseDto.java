@@ -4,11 +4,11 @@ import com.example.newspeed.entity.Post;
 import lombok.Getter;
 
 @Getter
-public class ToggleLikeResponseDto {
+public class GetLikeResponseDto {
     private Long postId;
     private int likeCount;
 
-    public ToggleLikeResponseDto(Post post) {
+    public GetLikeResponseDto(Post post) {
         this.postId = post.getPostId();
         this.likeCount = post.getUserLikeCount();
     }

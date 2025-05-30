@@ -13,11 +13,14 @@ import com.example.newspeed.repository.FollowRepository;
 import com.example.newspeed.repository.LikeRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -85,34 +88,49 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public FindPostResponseDto updatePost(Long postId, UpdatePostRequestDto updateDto) {
-        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("없음"));
+    public FindPostResponseDto updatePost(Long postId, AuthUserDto authUserDto, UpdatePostRequestDto updateDto) {
+        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("수정할 게시글을 찾지 못했습니다."));
+        Long loginUserId = authUserDto.getId(); // 로그인 유저 id 검사
+        if(!findPost.getUser().getUserId().equals(loginUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 글만 수정할 수 있습니다.");
+        }
         findPost.updatePost(updateDto);
         return new FindPostResponseDto(findPost);
     }
 
+
+    @Retryable(
+            value = OptimisticLockingFailureException.class,
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 100)
+    )
     @Transactional
-    public ToggleLikeResponseDto toggleLike(Long postId, AuthUserDto authUserDto) {
+    public void toggleLike(Long postId, AuthUserDto authUserDto) {
+
         Optional<PostLike> postLike = likeRepository.findByPostIdAndUserId(postId, authUserDto.getId());
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
 
         if(postLike.isPresent()) {
             PostLike postLikeEntity = postLike.get();
-            postLikeEntity.toggleLike();
+            likeRepository.updateLikeStatus(post, false);
             deletePostLike(postLikeEntity);
         } else {
-            PostLike postLikeEntity = createPostLike(postId, authUserDto);
-            postLikeEntity.toggleLike();
+            likeRepository.updateLikeStatus(post, true);
+            createPostLike(postId, authUserDto);
         }
-        return new ToggleLikeResponseDto(post);
     }
 
-    private PostLike createPostLike(Long postId, AuthUserDto authUserDto) {
+    @Transactional(readOnly = true)
+    public GetLikeResponseDto getPostLike(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
+        return new GetLikeResponseDto(post);
+    }
+
+    private void createPostLike(Long postId, AuthUserDto authUserDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
         User user = userRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
         PostLike postLike = new PostLike(user, post);
-
-        return likeRepository.save(postLike);
+        likeRepository.save(postLike);
     }
 
     private void deletePostLike(PostLike postLike) {
