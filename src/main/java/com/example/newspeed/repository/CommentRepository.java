@@ -12,5 +12,5 @@ import java.util.Optional;
  *
  * @author 이준영
  */
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 }

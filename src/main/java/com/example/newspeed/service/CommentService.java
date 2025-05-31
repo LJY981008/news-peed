@@ -68,8 +68,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentFindResponseDto> findCommentByPostId(Long postId) {
 
-        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
-        List<Comment> comments = findPost.getComments();
+        List<Comment> comments = commentRepository.findByPostIdAndDeletedFalse(postId);
 
         List<CommentFindResponseDto> responseDtoList = comments
                 .stream()
@@ -120,10 +119,10 @@ public class CommentService {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
         verifyWriterAuthorities(findComment, userDto);
+        findComment.softDelete();
+        commentRepository.save(findComment);
 
         CommentDeleteResponseDto responseDto = CommentMapper.toDto(findComment, CommentDeleteResponseDto.class);
-        commentRepository.delete(findComment);
-
         return responseDto;
     }
 

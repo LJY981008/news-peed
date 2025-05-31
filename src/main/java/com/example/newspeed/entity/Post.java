@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Table(name = "posts")
-public class Post extends TimeStampEntity{
+public class Post extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
