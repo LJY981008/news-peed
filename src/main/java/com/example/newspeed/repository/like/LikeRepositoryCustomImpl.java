@@ -1,17 +1,14 @@
-package com.example.newspeed.repository;
+package com.example.newspeed.repository.like;
 
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.PostLike;
 import com.example.newspeed.entity.QPost;
 import com.example.newspeed.entity.QPostLike;
-import com.querydsl.core.types.Path;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * <p>좋아요 테이블 QueryDSL 구현체</p>

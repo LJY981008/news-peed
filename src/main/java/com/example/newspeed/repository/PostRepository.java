@@ -15,10 +15,10 @@ import java.util.List;
  * @author 윤희준
  */
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>{
 
-    Page<Post> findByUser_UserIdIn(List<Long> followedUserIds, Pageable pageable);
-
+    Page<Post> findByUser_UserIdInAndDeletedFalse(List<Long> followedUserIds, Pageable pageable);
+    Page<Post> findAllByDeletedFalse(Pageable pageable);
     /**
      * 게시글 날짜로 조회할때 사용하는 레파지토리
      * @author 김태현
@@ -27,5 +27,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      * @param pageable
      * @return
      */
-    Page<Post> findAllByCreatedAtBetween(LocalDateTime startTime,LocalDateTime endTime, Pageable pageable);
+    Page<Post> findAllByCreatedAtBetweenAndDeletedFalse(LocalDateTime startTime,LocalDateTime endTime, Pageable pageable);
 }

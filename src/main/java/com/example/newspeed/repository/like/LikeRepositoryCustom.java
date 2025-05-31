@@ -1,4 +1,4 @@
-package com.example.newspeed.repository;
+package com.example.newspeed.repository.like;
 
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.PostLike;
