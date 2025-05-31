@@ -1,13 +1,15 @@
 package com.example.newspeed.service;
 
 import com.example.newspeed.dto.user.*;
+import com.example.newspeed.entity.BaseEntity;
+import com.example.newspeed.entity.Comment;
+import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.*;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.PasswordEncoder;
 import com.example.newspeed.util.PasswordValidator;
 import lombok.AllArgsConstructor;
-import org.hibernate.annotations.NotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +71,7 @@ public class UserServiceImpl implements UserService {
     public LoginUserResponseDto logIn(LoginUserRequestDto loginRequest){
 
         // 존재하지 않는 이메일일 때 에러 반환
-        User findUser = userRepository.findByEmail(loginRequest.getEmail())
+        User findUser = userRepository.findByEmailAndDeletedFalse(loginRequest.getEmail())
                 .orElseThrow(() -> new LoginFailedException("Invalid email or password"));
 
         // 비밀번호 일치하지 않을 때 에러 반환
@@ -99,7 +101,7 @@ public class UserServiceImpl implements UserService {
         } else if(name != null){
             // name으로 유저 검색
 
-            List<User> userList = userRepository.findByUserName(name);
+            List<User> userList = userRepository.findByUserNameAndDeletedFalse(name);
 
             if (userList == null || userList.isEmpty()) {
                 throw new NoResultFoundException("No search results found for the user name");
@@ -112,7 +114,7 @@ public class UserServiceImpl implements UserService {
         } else if(email != null){
             // email로 유저 검색
 
-            User user = userRepository.findByEmail(email)
+            User user = userRepository.findByEmailAndDeletedFalse(email)
                     .orElseThrow(() -> new NoResultFoundException("No search results found for the email"));
             return List.of(new SearchUserResponseDto(user));
 
@@ -135,7 +137,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUserProfile(UpdateUserProfileRequestDto updateRequest){ //profile 수정 통합 - password 암호화 미구현 상태
-        User user = userRepository.findByEmail(updateRequest.getEmail())
+        User user = userRepository.findByEmailAndDeletedFalse(updateRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
         if(updateRequest.getUserName() != null){
             user.setUserName(updateRequest.getUserName());
@@ -154,8 +156,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(DeleteUserRequestDto deleteRequest) {
-        User user = userRepository.findByEmail(deleteRequest.getEmail())
+        User user = userRepository.findByEmailAndDeletedFalse(deleteRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
-        userRepository.delete(user); //Bcrypt 암호화 미적용 상태 - 우선 어떤 비밀번호든 상관없이 삭제 요청시 삭제(암호화 적용 시 구현 예정)
+        user.softDelete();
+        logicalDeleteCascade(user);
+        userRepository.save(user);
+        //Bcrypt 암호화 미적용 상태 - 우선 어떤 비밀번호든 상관없이 삭제 요청시 삭제(암호화 적용 시 구현 예정)
+    }
+
+    private void logicalDeleteCascade(User user){
+        List<Post> posts = user.getPosts();
+        posts.forEach(Post::softDelete);
+
+        List<Comment> comments = user.getComments();
+        comments.forEach(BaseEntity::softDelete);
     }
 }
