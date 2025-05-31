@@ -92,7 +92,7 @@ public class CommentService {
             CommentUpdateRequestDto requestDto,
             AuthUserDto userDto
     ) {
-        Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
+        Comment findComment = getCommentById(commentId);
         verifyWriterAuthorities(findComment, userDto);
 
         String prevContent = findComment.getContent();
@@ -118,7 +118,7 @@ public class CommentService {
     @Transactional
     public CommentDeleteResponseDto deleteComment(Long commentId, AuthUserDto userDto) {
 
-        Comment findComment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
+        Comment findComment = getCommentById(commentId);
         verifyWriterAuthorities(findComment, userDto);
 
         CommentDeleteResponseDto responseDto = CommentMapper.toDto(findComment, CommentDeleteResponseDto.class);
@@ -127,6 +127,10 @@ public class CommentService {
         return responseDto;
     }
 
+    // 댓글 단건 조회
+    private Comment getCommentById(Long commentId) {
+        return commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
+    }
     /**
      * <p>로그인된 사용자의 해당 댓글 접근권한 체크</p>
      *
