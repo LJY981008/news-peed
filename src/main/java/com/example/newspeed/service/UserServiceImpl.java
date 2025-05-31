@@ -43,8 +43,7 @@ public class UserServiceImpl implements UserService {
 
         // 비밀번호 valid 확인
         if (!PasswordValidator.isValid(rawPassword)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character");
+            throw new InvalidPasswordException("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character");
         }
 
         // 비밀번호 encoding
