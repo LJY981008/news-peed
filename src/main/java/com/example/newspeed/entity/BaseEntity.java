@@ -5,7 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
-import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,9 +27,9 @@ public abstract class BaseEntity {
     private LocalDateTime modifiedAt;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isDeleted;
+    private boolean deleted;
 
     public void softDelete() {
-        this.isDeleted = true;
+        this.deleted = true;
     }
 }

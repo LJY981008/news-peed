@@ -49,8 +49,8 @@ public class CommentService {
             CommentCreateRequestDto requestDto,
             AuthUserDto userDto
     ) {
-        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
-        User user = userRepository.findByEmail(userDto.getEmail()).orElseThrow(() -> new NotFoundException("Not Found User"));
+        Post findPost = postRepository.findPostByPostIdAndDeletedFalse(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
+        User user = userRepository.findByEmailAndDeletedFalse(userDto.getEmail()).orElseThrow(() -> new NotFoundException("Not Found User"));
 
         Comment comment = new Comment(requestDto.getContent(), findPost, user);
         commentRepository.save(comment);
@@ -68,7 +68,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentFindResponseDto> findCommentByPostId(Long postId) {
 
-        List<Comment> comments = commentRepository.findCommentsByPostIdAndDeletedFalse(postId);
+        List<Comment> comments = commentRepository.findByPost_PostIdAndDeletedFalse(postId);
 
         List<CommentFindResponseDto> responseDtoList = comments
                 .stream()
