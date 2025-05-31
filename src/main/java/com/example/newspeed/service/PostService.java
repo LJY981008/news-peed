@@ -4,6 +4,7 @@ package com.example.newspeed.service;
 import com.example.newspeed.dto.post.*;
 
 import com.example.newspeed.dto.user.AuthUserDto;
+import com.example.newspeed.entity.Comment;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.entity.PostLike;
@@ -124,12 +125,16 @@ public class PostService {
         UserRole loginUserRole = authUserDto.getUserRole();
 
         if (loginUserRole == UserRole.ADMIN) {
-            postRepository.delete(post);
+            post.softDelete();
+            logicalDeleteCascade(post);
+            postRepository.save(post);
             return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.", "/post/find-all");
         } else if (!post.getUser().getUserId().equals(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다");
         } else {
-            postRepository.delete(post);
+            post.softDelete();
+            logicalDeleteCascade(post);
+            postRepository.save(post);
             return new DeletePostResponseDto("정상적으로 삭제되었습니다.", "/post/find-all");
         }
     }
@@ -228,5 +233,9 @@ public class PostService {
         likeRepository.delete(postLike);
     }
 
+    private void logicalDeleteCascade(Post post){
+        List<Comment> comments = post.getComments();
+        comments.forEach(Comment::softDelete);
+    }
 
 }

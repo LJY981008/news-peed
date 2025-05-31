@@ -28,4 +28,4 @@ public interface PostRepository extends JpaRepository<Post, Long>{
      * @return
      */
     Page<Post> findAllByCreatedAtBetweenAndDeletedFalse(LocalDateTime startTime,LocalDateTime endTime, Pageable pageable);
-}
+ }
