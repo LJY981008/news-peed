@@ -8,7 +8,7 @@ import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.AuthenticationException;
 import com.example.newspeed.exception.exceptions.InvalidRequestException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
-import com.example.newspeed.repository.CommentRepository;
+import com.example.newspeed.repository.comment.CommentRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.CommentMapper;
@@ -49,8 +49,8 @@ public class CommentService {
             CommentCreateRequestDto requestDto,
             AuthUserDto userDto
     ) {
-        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
-        User user = userRepository.findByEmail(userDto.getEmail()).orElseThrow(() -> new NotFoundException("Not Found User"));
+        Post findPost = postRepository.findPostByPostIdAndDeletedFalse(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
+        User user = userRepository.findByEmailAndDeletedFalse(userDto.getEmail()).orElseThrow(() -> new NotFoundException("Not Found User"));
 
         Comment comment = new Comment(requestDto.getContent(), findPost, user);
         commentRepository.save(comment);
@@ -68,8 +68,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentFindResponseDto> findCommentByPostId(Long postId) {
 
-        Post findPost = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
-        List<Comment> comments = findPost.getComments();
+        List<Comment> comments = commentRepository.findByPost_PostIdAndDeletedFalse(postId);
 
         List<CommentFindResponseDto> responseDtoList = comments
                 .stream()
@@ -120,10 +119,10 @@ public class CommentService {
 
         Comment findComment = getCommentById(commentId);
         verifyWriterAuthorities(findComment, userDto);
+        findComment.softDelete();
+        commentRepository.save(findComment);
 
         CommentDeleteResponseDto responseDto = CommentMapper.toDto(findComment, CommentDeleteResponseDto.class);
-        commentRepository.delete(findComment);
-
         return responseDto;
     }
 

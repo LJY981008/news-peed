@@ -4,13 +4,14 @@ package com.example.newspeed.service;
 import com.example.newspeed.dto.post.*;
 
 import com.example.newspeed.dto.user.AuthUserDto;
+import com.example.newspeed.entity.Comment;
 import com.example.newspeed.entity.Post;
 import com.example.newspeed.entity.User;
 import com.example.newspeed.entity.PostLike;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
 import com.example.newspeed.repository.FollowRepository;
-import com.example.newspeed.repository.LikeRepository;
+import com.example.newspeed.repository.like.LikeRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +53,7 @@ public class PostService {
     // 게시글 전체
     @Transactional
     public Page<FindPostResponseDto> findAllPost(Pageable pageable) {
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts = postRepository.findAllByDeletedFalse(pageable);
         if (posts.isEmpty()) {
             throw new NotFoundException("해당 페이지는 존재 하지 않습니다."); // 페이지는 0부터 시작합니다.
         }
@@ -64,7 +65,7 @@ public class PostService {
     public Page<FindPostResponseDto> findAllByDate(LocalDate createdAt, Pageable pageable) {
         LocalDateTime startTime = createdAt.atStartOfDay();
         LocalDateTime endTime = createdAt.plusDays(1).atStartOfDay();
-        Page<Post> posts = postRepository.findAllByCreatedAtBetween(startTime, endTime, pageable);
+        Page<Post> posts = postRepository.findAllByCreatedAtBetweenAndDeletedFalse(startTime, endTime, pageable);
         if (posts.isEmpty()) {
             throw new NotFoundException(createdAt + " 날짜에 만들어진 게시물이 없습니다.");
         }
@@ -76,6 +77,7 @@ public class PostService {
     public FindPostResponseDto findById(Long userId) {
         Post findPost = postRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("존재 하지 않는 게시글 입니다."));
+        if(findPost.isDeleted()) throw new NotFoundException("존재 하지 않는 게시글 입니다.");
         return new FindPostResponseDto(findPost);
     }
 
@@ -84,7 +86,7 @@ public class PostService {
     public Page<FindPostResponseDto> findFollowingPosts(Long currentUserId, Pageable pageable){
         List<Long> followedUserIds = followRepository.findFollowedUserIdsByFollowingUserId(currentUserId);
 
-        return postRepository.findByUser_UserIdIn(followedUserIds, pageable)
+        return postRepository.findByUser_UserIdInAndDeletedFalse(followedUserIds, pageable)
                 .map(FindPostResponseDto::findPostDto);
     }
 
@@ -123,12 +125,16 @@ public class PostService {
         UserRole loginUserRole = authUserDto.getUserRole();
 
         if (loginUserRole == UserRole.ADMIN) {
-            postRepository.delete(post);
+            post.softDelete();
+            logicalDeleteCascade(post);
+            postRepository.save(post);
             return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.", "/post/find-all");
         } else if (!post.getUser().getUserId().equals(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다");
         } else {
-            postRepository.delete(post);
+            post.softDelete();
+            logicalDeleteCascade(post);
+            postRepository.save(post);
             return new DeletePostResponseDto("정상적으로 삭제되었습니다.", "/post/find-all");
         }
     }
@@ -227,5 +233,9 @@ public class PostService {
         likeRepository.delete(postLike);
     }
 
+    private void logicalDeleteCascade(Post post){
+        List<Comment> comments = post.getComments();
+        comments.forEach(Comment::softDelete);
+    }
 
 }

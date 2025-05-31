@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "comments")
-public class Comment extends TimeStampEntity {
+public class Comment extends BaseEntity {
 
     @Id
     @Column(name = "comment_id")
