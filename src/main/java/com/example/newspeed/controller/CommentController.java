@@ -6,6 +6,7 @@ import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,14 +28,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    /**
-     * <p>댓글 생성</p>
-     *
-     * @param postId     댓글이 등록될 포스트의 ID
-     * @param requestDto {@link CommentCreateRequestDto} 요청 DTO
-     * @param userDto    로그인된 사용자 정보
-     * @return {@link CommentCreateResponseDto} 반환 DTO
-     */
+    // 댓글 생성
     @PostMapping
     public ResponseEntity<CommentCreateResponseDto> createComment(
             @RequestParam Long postId,
@@ -42,31 +36,19 @@ public class CommentController {
             @AuthenticationPrincipal AuthUserDto userDto
     ) {
         CommentCreateResponseDto responseComment = commentService.createComment(postId, requestDto, userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseComment);
+        return responseEntity(HttpStatus.CREATED, responseComment);
     }
 
-    /**
-     * <p>댓글 조회</p>
-     *
-     * @param postId 댓글을 조회할 포스트의 ID
-     * @return {@link CommentFindResponseDto} 반환 DTO 리스트
-     */
+    // 포스트의 댓글 전체 조회
     @GetMapping
-    public ResponseEntity<List<CommentFindResponseDto>> findCommentByPostId(
+    public ResponseEntity<List<CommentFindResponseDto>> findCommentsByPostId(
             @RequestParam Long postId
     ) {
         List<CommentFindResponseDto> responseComments = commentService.findCommentByPostId(postId);
-        return ResponseEntity.status(HttpStatus.OK).body(responseComments);
+        return responseEntity(HttpStatus.OK,  responseComments);
     }
 
-    /**
-     * <p>댓글 수정</p>
-     *
-     * @param commentId  댓글 Index
-     * @param requestDto 수정 내용
-     * @param userDto    로그인된 사용자 정보
-     * @return {@link CommentUpdateResponseDto}
-     */
+    // 댓글 수정
     @PatchMapping
     public ResponseEntity<CommentUpdateResponseDto> updateComment(
             @RequestParam Long commentId,
@@ -74,22 +56,28 @@ public class CommentController {
             @AuthenticationPrincipal AuthUserDto userDto
     ) {
         CommentUpdateResponseDto responseComment = commentService.updateComment(commentId, requestDto, userDto);
-        return ResponseEntity.status(HttpStatus.OK).body(responseComment);
+        return responseEntity(HttpStatus.OK, responseComment);
     }
 
-    /**
-     * <p>댓글 삭제</p>
-     *
-     * @param commentId 댓글 Index
-     * @param userDto   로그인된 사용자 정보
-     * @return {@link CommentDeleteResponseDto}
-     */
+    // 댓글 삭제
     @DeleteMapping
     public ResponseEntity<CommentDeleteResponseDto> deleteComment(
             @RequestParam Long commentId,
             @AuthenticationPrincipal AuthUserDto userDto
     ) {
         CommentDeleteResponseDto responseComment = commentService.deleteComment(commentId, userDto);
-        return ResponseEntity.status(HttpStatus.OK).body(responseComment);
+        return responseEntity(HttpStatus.OK, responseComment);
+    }
+
+    /**
+     * <p>응답 타입의 일관성을 위한 메서드</p>
+     *
+     * @param status 상태메시지
+     * @param body 응답 Dto
+     * @return 성공적으로 반환 했거나 실패 시 Dto의 타입 문제로 서버에러 반환
+     * @param <T> {@link BaseCommentResponseDto}을 상속 받은 ResponseDto
+     */
+    private <T> ResponseEntity<T> responseEntity(HttpStatusCode status, T body) {
+           return ResponseEntity.status(status).body(body);
     }
 }
