@@ -34,7 +34,10 @@ public class FollowController {
      * @return "success"    반환 Message
      */
     @PostMapping("/follow")
-    public ResponseEntity<String> followUser(@AuthenticationPrincipal AuthUserDto userDto, @Valid @RequestBody FollowRequestDto followRequest){
+    public ResponseEntity<String> followUser(
+            @AuthenticationPrincipal AuthUserDto userDto,
+            @Valid @RequestBody FollowRequestDto followRequest
+    ){
         Long currentUserId = userDto.getId();
         followService.follow(currentUserId, followRequest.getTargetEmail());
         return ResponseEntity.ok("success");
@@ -48,7 +51,10 @@ public class FollowController {
      * @return "success"    반환 Message
      */
     @DeleteMapping("/unfollow")
-    public ResponseEntity<String> unfollowUser(@AuthenticationPrincipal AuthUserDto userDto, @Valid @RequestBody FollowRequestDto followRequest){
+    public ResponseEntity<String> unfollowUser(
+            @AuthenticationPrincipal AuthUserDto userDto,
+            @Valid @RequestBody FollowRequestDto followRequest
+    ){
         Long currentUserId = userDto.getId();
         followService.unfollow(currentUserId, followRequest.getTargetEmail());
         return ResponseEntity.ok("success");

@@ -10,7 +10,7 @@ import com.example.newspeed.entity.User;
 import com.example.newspeed.entity.PostLike;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
-import com.example.newspeed.repository.FollowRepository;
+import com.example.newspeed.repository.follow.FollowRepository;
 import com.example.newspeed.repository.like.LikeRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
@@ -75,9 +75,8 @@ public class PostService {
     // 게시글 단건 조회
     @Transactional
     public FindPostResponseDto findById(Long userId) {
-        Post findPost = postRepository.findById(userId)
+        Post findPost = postRepository.findPostByPostIdAndDeletedFalse(userId)
                 .orElseThrow(() -> new NotFoundException("존재 하지 않는 게시글 입니다."));
-        if(findPost.isDeleted()) throw new NotFoundException("존재 하지 않는 게시글 입니다.");
         return new FindPostResponseDto(findPost);
     }
 
@@ -96,7 +95,6 @@ public class PostService {
      * @param title 게시글 제목
      * @param content 게시글 내용
      * @param imageUrl 게시글 이미지
-     * @param userId 게시글생성하는 유저의 id
      * @return 성공시 반환되는 {@link CreatePostResponseDto} 성공메세지와 게시글 URL
      * @author 윤희준
      */
@@ -120,23 +118,14 @@ public class PostService {
      */
     @Transactional
     public DeletePostResponseDto deletePost(Long postId, AuthUserDto authUserDto) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 게시물 입니다."));
-        Long loginUserId = authUserDto.getId();
-        UserRole loginUserRole = authUserDto.getUserRole();
+        Post post = postRepository.findPostByPostIdAndDeletedFalse(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 게시물 입니다."));
 
-        if (loginUserRole == UserRole.ADMIN) {
-            post.softDelete();
-            logicalDeleteCascade(post);
-            postRepository.save(post);
-            return new DeletePostResponseDto("관리자 권한으로 삭제되었습니다.", "/post/find-all");
-        } else if (!post.getUser().getUserId().equals(loginUserId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제할 권한이 없습니다");
-        } else {
-            post.softDelete();
-            logicalDeleteCascade(post);
-            postRepository.save(post);
-            return new DeletePostResponseDto("정상적으로 삭제되었습니다.", "/post/find-all");
-        }
+        String msg = verifyWriterAuthorities(post, authUserDto);
+
+        post.softDelete();
+        logicalDeleteCascade(post);
+        postRepository.save(post);
+        return new DeletePostResponseDto(msg, "/post/find-all");
     }
 
     /**
@@ -152,17 +141,14 @@ public class PostService {
     // 게시글 수정
     @Transactional
     public FindPostResponseDto updatePost(Long postId, AuthUserDto authUserDto, UpdatePostRequestDto updateDto) {
-        Post findPost = postRepository.findById(postId)
+        Post findPost = postRepository.findPostByPostIdAndDeletedFalse(postId)
                 .orElseThrow(() -> new NotFoundException("수정할 게시글을 찾지 못했습니다."));
 
-        Long loginUserId = authUserDto.getId(); // 로그인 유저 id 검사
-        if (!findPost.getUser().getUserId().equals(loginUserId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 글만 수정할 수 있습니다.");
-        }
+        String msg = verifyWriterAuthorities(findPost, authUserDto);
+
         findPost.updatePost(updateDto);
         return new FindPostResponseDto(findPost);
     }
-
 
     /**
      * <p>좋아요 작동 이벤트</p>
@@ -195,7 +181,6 @@ public class PostService {
 
     /**
      * <p>게시글의 좋아요 개수 조회</p>
-     * TODO 좋아요 음수 방어 필요
      *
      * @param postId 좋아요에 해당하는 게시글의 Index
      * @return {@link GetLikeResponseDto}
@@ -238,4 +223,20 @@ public class PostService {
         comments.forEach(Comment::softDelete);
     }
 
+
+    private String verifyWriterAuthorities(Post post, AuthUserDto authUserDto) {
+        Long loginUserId = authUserDto.getId();
+        UserRole loginUserRole = authUserDto.getUserRole();
+        String msg = "";
+
+        if (loginUserRole == UserRole.ADMIN) {
+            msg = "관리자 권한";
+        } else if (post.getUser().getUserId().equals(loginUserId)) {
+            msg = "정상적";
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다");
+        }
+
+        return msg;
+    }
 }

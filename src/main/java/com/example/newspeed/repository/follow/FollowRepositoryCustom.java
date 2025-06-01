@@ -1,6 +1,4 @@
-package com.example.newspeed.repository;
-
-import org.springframework.data.repository.query.Param;
+package com.example.newspeed.repository.follow;
 
 import java.util.List;
 

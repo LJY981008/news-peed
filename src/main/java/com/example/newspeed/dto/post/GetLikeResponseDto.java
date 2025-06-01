@@ -15,6 +15,6 @@ public class GetLikeResponseDto {
 
     public GetLikeResponseDto(Post post) {
         this.postId = post.getPostId();
-        this.likeCount = post.getUserLikeCount();
+        this.likeCount = post.getUserLikeCount() < 0 ? 0 : post.getUserLikeCount();
     }
 }

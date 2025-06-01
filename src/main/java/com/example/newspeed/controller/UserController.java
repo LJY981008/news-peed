@@ -87,8 +87,10 @@ public class UserController {
      * @return List<SearchUserResponseDto> 검색된 유저 정보 리스트
      */
     @GetMapping("/search")
-    public ResponseEntity<List<SearchUserResponseDto>> search(@RequestParam(required = false) String name,
-                                                              @RequestParam(required = false) String email){
+    public ResponseEntity<List<SearchUserResponseDto>> search(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email
+    ){
         List<SearchUserResponseDto> searchResponseList = usersService.search(name, email);
 
         return new ResponseEntity<>(searchResponseList, HttpStatus.OK);

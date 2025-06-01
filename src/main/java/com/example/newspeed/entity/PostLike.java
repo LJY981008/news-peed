@@ -31,11 +31,11 @@ public class PostLike {
     @Version
     private Long version;
 
+    public PostLike() {
+    }
+
     public PostLike(User user, Post post) {
         this.user = user;
         this.post = post;
-    }
-
-    public PostLike() {
     }
 }
