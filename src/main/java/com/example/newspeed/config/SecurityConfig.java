@@ -46,26 +46,29 @@ public class SecurityConfig {
                 .authorizeHttpRequests( auth -> auth
                         // 댓글 인가
                         .requestMatchers(HttpMethod.GET, Const.COMMENT_URL).permitAll()
-                        .requestMatchers(HttpMethod.POST, Const.COMMENT_URL).hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE, Const.COMMENT_URL).hasRole("USER")
-                        .requestMatchers(HttpMethod.PATCH, Const.COMMENT_URL).hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, Const.COMMENT_URL).hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.DELETE, Const.COMMENT_URL).hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.PATCH, Const.COMMENT_URL).hasRole(UserRole.USER.name())
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 유저 인가
                         .requestMatchers(HttpMethod.POST, "/news-peed/users/signup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/news-peed/users/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/news-peed/users/search").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify").hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/news-peed/users/quit").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/news-peed/users/search").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.DELETE, "/news-peed/users/quit").hasRole(UserRole.USER.name())
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 팔로우 인가
-                        .requestMatchers(HttpMethod.POST, "/news-peed/follows/follow").hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/news-peed/follows/unfollow").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/news-peed/follows/follow").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.DELETE, "/news-peed/follows/unfollow").hasRole(UserRole.USER.name())
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 게시글 인가
-                        .requestMatchers(HttpMethod.PATCH, Const.POST_URL + "/like").hasRole("USER")
+                        .requestMatchers(HttpMethod.PATCH, Const.POST_URL + "/like").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.POST, Const.POST_URL + "/create-posts").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.DELETE, Const.POST_URL + "/delete-posts").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.PATCH, Const.POST_URL + "/update-posts").hasRole(UserRole.USER.name())
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtLoginBlockFilter, UsernamePasswordAuthenticationFilter.class)
