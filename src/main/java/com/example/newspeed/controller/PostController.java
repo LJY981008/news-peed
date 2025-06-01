@@ -30,28 +30,9 @@ public class PostController {
 
     private final PostService postService;
 
-    /* 토큰 설명
-        private final JwtUtil jwtUtil;
-        토큰 생성 : jwtUtil.createToken(1L, "LJY", UserRole.USER);
-        토큰 생성 메서드 프로퍼티 타입 : public String createToken(Long userId, String name, UserRole userRole)
-        토큰 생성 후 반환 :
-        return ResponseEntity.status(HttpStatus.OK)
-                    .header("Authorization", token)
-                    .body(responseDto);
-
-        인가된 객체 호출
-        Optional<Authentication> authentication = Optional.ofNullable(
-                SecurityContextHolder.getContext().getAuthentication()
-        );
-        if(authentication.isPresent() && authentication.get().getPrincipal() instanceof AuthUserDto){
-            AuthUserDto authUserDto = (AuthUserDto) authentication.get().getPrincipal();
-            Long userId = authUserDto.getId();
-            String email = authUserDto.getEmail();
-        }
-     */
-
     /**
      * 게시글 조회
+     *
      * @author 김태현
      * @param date
      * @param pageable
@@ -64,10 +45,12 @@ public class PostController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @PageableDefault(size = 10, sort = "modifiedAt", direction = Sort.Direction.DESC)
-            Pageable pageable) {
+            Pageable pageable
+    ) {
         Page<FindPostResponseDto> findPostResponseDtoList = (date == null) ? postService.findAllPost(pageable) : postService.findAllByDate(date, pageable);
         return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
     }
+
     // 게시글 단건 조회
     @GetMapping
     public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam Long postId) {
@@ -80,7 +63,8 @@ public class PostController {
     public ResponseEntity<Page<FindPostResponseDto>> findFollowingPost(
             @AuthenticationPrincipal AuthUserDto userDto,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
-            Pageable pageable) {
+            Pageable pageable
+    ) {
         Long currentUserId = userDto.getId();
         Page<FindPostResponseDto> findPostResponseDtoList = postService.findFollowingPosts(currentUserId, pageable);
 
@@ -90,7 +74,6 @@ public class PostController {
     /**
      * <p>게시글 생성</p>
      *
-     *
      * @param dto 게시글 생성에 필요한 title, content, imageUrl {@link CreatePostRequestDto}
      * @param userDto 인증된 사용자 정보 {@link AuthUserDto}
      * @return 생성 성공시 {@code 201 CREATED} {@link CreatePostResponseDto} 포함하는 {@link ResponseEntity}
@@ -99,7 +82,8 @@ public class PostController {
     @PostMapping("/create-posts")
     public ResponseEntity<CreatePostResponseDto> createPost(
             @RequestBody @Valid CreatePostRequestDto dto,
-            @AuthenticationPrincipal AuthUserDto userDto) {
+            @AuthenticationPrincipal AuthUserDto userDto
+    ) {
         CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl(),userDto);
 
         return ResponseEntity.status(201).body(post);
@@ -107,12 +91,16 @@ public class PostController {
 
     /**
      * <p>게시글 삭제</p>
+     *
      * @param postId 게시글의 pk값
      * @param authUserDto 인증된 사용자 정보 {@link AuthUserDto}
      * @return 삭제 성공시 {@code 200 OK}, {@link DeletePostResponseDto} 를 포함하는 {@link ResponseEntity}
      */
     @DeleteMapping("/delete-posts/{postId}")
-    public ResponseEntity<DeletePostResponseDto> deletePost(@PathVariable Long postId, @AuthenticationPrincipal AuthUserDto authUserDto) {
+    public ResponseEntity<DeletePostResponseDto> deletePost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal AuthUserDto authUserDto
+    ) {
         DeletePostResponseDto deletePost = postService.deletePost(postId, authUserDto);
 
         return ResponseEntity.status(200).body(deletePost);
@@ -120,6 +108,7 @@ public class PostController {
 
     /**
      * 게시글 수정
+     *
      * @author 김태현
      * @param postId
      * @param updateDto
@@ -128,15 +117,17 @@ public class PostController {
      */
     // 게시글 수정
     @PatchMapping("/post-update/{postId}")
-    public ResponseEntity<FindPostResponseDto> updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequestDto updateDto, @AuthenticationPrincipal AuthUserDto authUserDto) {
+    public ResponseEntity<FindPostResponseDto> updatePost(
+            @PathVariable Long postId,
+            @RequestBody UpdatePostRequestDto updateDto,
+            @AuthenticationPrincipal AuthUserDto authUserDto
+    ) {
         FindPostResponseDto findPostResponseDto = postService.updatePost(postId, authUserDto, updateDto);
         return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
     }
 
     /**
      * <p>좋아요 기능</p>
-     * TODO 좋아요 음수 방어 기능 추가 필요
-     * TODO 굳이 get 으로 한번 더 조회하는 건 아닌지 고려해볼 여지가 있음
      *
      * @param postId      좋아요가 눌린 게시글 Index
      * @param authUserDto 로그인된 사용자 정보

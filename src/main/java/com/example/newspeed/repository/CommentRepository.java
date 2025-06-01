@@ -1,4 +1,4 @@
-package com.example.newspeed.repository.comment;
+package com.example.newspeed.repository;
 
 import com.example.newspeed.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;

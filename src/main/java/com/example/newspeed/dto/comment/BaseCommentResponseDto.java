@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public abstract class BaseCommentResponseDto {
+
     private final Long commentId;
     private final Long postId;
     private final String userName;

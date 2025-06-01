@@ -10,6 +10,7 @@ import lombok.Getter;
  */
 @Getter
 public class CommentFindResponseDto extends BaseCommentResponseDto {
+
     private final String createdAt;
     private final String modifiedAt;
 

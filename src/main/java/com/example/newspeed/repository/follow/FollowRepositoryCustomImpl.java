@@ -1,4 +1,4 @@
-package com.example.newspeed.repository;
+package com.example.newspeed.repository.follow;
 
 import com.example.newspeed.entity.QFollow;
 import com.querydsl.jpa.impl.JPAQueryFactory;

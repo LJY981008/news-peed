@@ -8,7 +8,7 @@ import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.AuthenticationException;
 import com.example.newspeed.exception.exceptions.InvalidRequestException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
-import com.example.newspeed.repository.comment.CommentRepository;
+import com.example.newspeed.repository.CommentRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.CommentMapper;
@@ -55,8 +55,7 @@ public class CommentService {
         Comment comment = new Comment(requestDto.getContent(), findPost, user);
         commentRepository.save(comment);
 
-        CommentCreateResponseDto responseDto = CommentMapper.toDto(comment, CommentCreateResponseDto.class);
-        return responseDto;
+        return CommentMapper.toDto(comment, CommentCreateResponseDto.class);
     }
 
     /**
@@ -70,11 +69,10 @@ public class CommentService {
 
         List<Comment> comments = commentRepository.findByPost_PostIdAndDeletedFalse(postId);
 
-        List<CommentFindResponseDto> responseDtoList = comments
+        return comments
                 .stream()
                 .map(comment -> CommentMapper.toDto(comment, CommentFindResponseDto.class))
                 .toList();
-        return responseDtoList;
     }
 
     /**
@@ -119,17 +117,18 @@ public class CommentService {
 
         Comment findComment = getCommentById(commentId);
         verifyWriterAuthorities(findComment, userDto);
+
         findComment.softDelete();
         commentRepository.save(findComment);
 
-        CommentDeleteResponseDto responseDto = CommentMapper.toDto(findComment, CommentDeleteResponseDto.class);
-        return responseDto;
+        return CommentMapper.toDto(findComment, CommentDeleteResponseDto.class);
     }
 
     // 댓글 단건 조회
     private Comment getCommentById(Long commentId) {
         return commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
     }
+
     /**
      * <p>로그인된 사용자의 해당 댓글 접근권한 체크</p>
      *
