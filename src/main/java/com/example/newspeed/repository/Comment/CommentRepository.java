@@ -12,11 +12,5 @@ import java.util.List;
  *
  * @author 이준영
  */
-public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByPost_PostIdAndDeletedFalse(Long postId);
-
-    @Query("SELECT c FROM Comment c " +
-            "LEFT JOIN FETCH c.user " +
-            "WHERE c.post.postId = :postId AND c.deleted = false")
-    List<Comment> findByPostIdWithUser(@Param("postId") Long postId);
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 }

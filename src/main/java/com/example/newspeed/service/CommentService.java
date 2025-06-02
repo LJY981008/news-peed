@@ -67,7 +67,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentFindResponseDto> findCommentByPostId(Long postId) {
 
-        List<Comment> comments = commentRepository.findByPostIdWithUser(postId);
+        List<Comment> comments = commentRepository.findCommentByPostId(postId);
 
         return comments
                 .stream()
