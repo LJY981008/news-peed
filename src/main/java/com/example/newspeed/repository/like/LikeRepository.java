@@ -4,7 +4,7 @@ import com.example.newspeed.entity.PostLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * <p>좋아요 테이블 레포지토리</p>
+ * 좋아요 엔티티의 기본적인 CRUD 작업을 위한 레포지토리
  *
  * @author 이준영
  */

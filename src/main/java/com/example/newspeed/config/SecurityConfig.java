@@ -19,7 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * <p>스프링 시큐리티</p>
+ * Spring Security 설정 클래스
+ * 애플리케이션의 보안 설정을 정의합니다.
  *
  * @author 이준영
  */
@@ -33,6 +34,12 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtLoginBlockFilter jwtLoginBlockFilter;
 
+    /**
+     * Spring Security 필터 체인을 구성합니다.
+     * 
+     * @param httpSecurity HTTP 보안 설정 객체
+     * @return 구성된 SecurityFilterChain
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity

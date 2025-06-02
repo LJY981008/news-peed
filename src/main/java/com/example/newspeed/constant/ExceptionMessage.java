@@ -28,4 +28,9 @@ public final class ExceptionMessage {
 
     // 좋아요 관련 예외 메시지
     public static final String LIKE_NOT_FOUND = "좋아요 정보를 찾을 수 없습니다.";
+
+    // 댓글 관련 예외 메시지
+    public static final String COMMENT_NOT_FOUND = "찾을 수 없는 댓글 입니다.";
+    public static final String COMMENT_DELETED = "이미 삭제된 댓글 입니다.";
+    public static final String COMMENT_UNAUTHORIZED = "댓글에 대한 권한이 없습니다.";
 } 

@@ -21,6 +21,12 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
+/**
+ * JWT 토큰의 생성, 검증, 파싱을 담당하는 유틸리티 클래스
+ * 토큰 생성, 검증, 사용자 정보 추출 등의 기능을 제공합니다.
+ *
+ * @author 이준영
+ */
 @Slf4j(topic = "JwtUtil")
 @Component
 @RequiredArgsConstructor
@@ -30,6 +36,12 @@ public class JwtUtil {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
+    /**
+     * JWT 시크릿 키를 초기화합니다.
+     * 애플리케이션 시작 시 자동으로 호출됩니다.
+     *
+     * @throws ResponseStatusException JWT 설정이 잘못된 경우
+     */
     @PostConstruct
     public void init() {
         try {
@@ -50,6 +62,14 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * 새로운 JWT 토큰을 생성합니다.
+     *
+     * @param userId 사용자 ID
+     * @param email 사용자 이메일
+     * @param userRole 사용자 권한
+     * @return 생성된 JWT 토큰
+     */
     public String createToken(Long userId, String email, UserRole userRole) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtProperties.getTokenValidityInMilliseconds());
@@ -65,6 +85,13 @@ public class JwtUtil {
                         .compact();
     }
 
+    /**
+     * Bearer 토큰에서 실제 토큰 값을 추출합니다.
+     *
+     * @param tokenValue Bearer 토큰
+     * @return 추출된 토큰 값
+     * @throws ResponseStatusException 토큰이 없거나 형식이 잘못된 경우
+     */
     public String substringToken(String tokenValue) {
         if (!StringUtils.hasText(tokenValue)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다.");
@@ -75,6 +102,13 @@ public class JwtUtil {
         return tokenValue.substring(jwtProperties.getBearerPrefix().length());
     }
 
+    /**
+     * JWT 토큰에서 클레임을 추출합니다.
+     *
+     * @param token JWT 토큰
+     * @return 추출된 클레임
+     * @throws ResponseStatusException 토큰이 만료되었거나 잘못된 경우
+     */
     public Claims extractClaims(String token) {
         try {
             return Jwts.parserBuilder()
@@ -93,6 +127,13 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * JWT 토큰에서 사용자 ID를 추출합니다.
+     *
+     * @param token JWT 토큰
+     * @return 사용자 ID
+     * @throws ResponseStatusException 사용자 ID 형식이 잘못된 경우
+     */
     public Long getUserId(String token) {
         try {
             String userId = extractClaims(token).getSubject();
@@ -102,6 +143,13 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * JWT 토큰에서 사용자 권한을 추출합니다.
+     *
+     * @param token JWT 토큰
+     * @return 사용자 권한
+     * @throws ResponseStatusException 사용자 권한이 잘못된 경우
+     */
     public UserRole getUserRole(String token) {
         try {
             String userRole = extractClaims(token).get("userRole", String.class);
@@ -111,6 +159,13 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * JWT 토큰에서 사용자 이메일을 추출합니다.
+     *
+     * @param token JWT 토큰
+     * @return 사용자 이메일
+     * @throws ResponseStatusException 이메일 정보가 없는 경우
+     */
     public String getEmail(String token) {
         String userEmail = extractClaims(token).get("email", String.class);
         if (userEmail == null) {
