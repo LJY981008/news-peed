@@ -54,7 +54,7 @@ public class UserController {
 
         SignupUserResponseDto signUpResponseDto = usersService.signUp(signupRequest);
 
-        return buildResponse(signUpResponseDto, HttpStatus.CREATED, null);
+        return buildResponse(signUpResponseDto, HttpStatus.CREATED);
 
     }
 
@@ -92,21 +92,21 @@ public class UserController {
     ){
         List<SearchUserResponseDto> searchResponseList = usersService.search(name, email);
 
-        return buildResponse(searchResponseList, HttpStatus.OK, null);
+        return buildResponse(searchResponseList, HttpStatus.OK);
     }
 
 
     @PutMapping("/modify")
     public ResponseEntity<String> modifyUserProfile(@Valid @RequestBody UpdateUserProfileRequestDto updateRequest){
         usersService.updateUserProfile(updateRequest);
-        return buildResponse("success", HttpStatus.OK, null);
+        return buildResponse("success", HttpStatus.OK);
     }
 
 
     @DeleteMapping("/quit")
     public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUserRequestDto deleteRequest){
         usersService.deleteUser(deleteRequest);
-        return buildResponse("success", HttpStatus.OK, null);
+        return buildResponse("success", HttpStatus.OK);
     }
 
 
@@ -114,16 +114,24 @@ public class UserController {
      * <p>통일된 응답을 제공하는 기능</p>
      * @param body 응답 Dto 또는 응답 메세지
      * @param status Http 상태 코드
-     * @param token 인증 토큰 부여
      * @return 상태 코드, 응답 바디 반환 (토큰 부여 시 토큰 반환)
      * @param <T> 응답 Dto 또는 String
      */
-    private <T> ResponseEntity<T> buildResponse(T body, HttpStatus status, String token) {
-        if (token != null && !token.isEmpty()) {
-            return ResponseEntity.status(status)
-                    .header("Authorization", token)
-                    .body(body);
-        }
+    /**
+     * @param body 응답 Dto 또는 응답 메세지
+     * @param status Http 상태 코드
+     */
+    private <T> ResponseEntity<T> buildResponse(T body, HttpStatus status) {
         return ResponseEntity.status(status).body(body);
+    }
+    /**
+     * @param body 응답 Dto 또는 응답 메세지
+     * @param status Http 상태 코드
+     * @param token 인증 토큰 부여
+     */
+    private <T> ResponseEntity<T> buildResponse(T body, HttpStatus status, String token) {
+        return ResponseEntity.status(status)
+                .header("Authorization", token)
+                .body(body);
     }
 }
