@@ -4,6 +4,7 @@ import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.comment.*;
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.service.CommentService;
+import com.example.newspeed.util.EntityResponser;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 /**
@@ -36,7 +38,7 @@ public class CommentController {
             @AuthenticationPrincipal AuthUserDto userDto
     ) {
         CommentCreateResponseDto responseComment = commentService.createComment(postId, requestDto, userDto);
-        return responseEntity(HttpStatus.CREATED, responseComment);
+        return EntityResponser.responseEntity(HttpStatus.CREATED, responseComment);
     }
 
     // 포스트의 댓글 전체 조회
@@ -45,7 +47,7 @@ public class CommentController {
             @RequestParam Long postId
     ) {
         List<CommentFindResponseDto> responseComments = commentService.findCommentByPostId(postId);
-        return responseEntity(HttpStatus.OK,  responseComments);
+        return EntityResponser.responseEntity(HttpStatus.OK,  responseComments);
     }
 
     // 댓글 수정
@@ -56,7 +58,7 @@ public class CommentController {
             @AuthenticationPrincipal AuthUserDto userDto
     ) {
         CommentUpdateResponseDto responseComment = commentService.updateComment(commentId, requestDto, userDto);
-        return responseEntity(HttpStatus.OK, responseComment);
+        return EntityResponser.responseEntity(HttpStatus.OK, responseComment);
     }
 
     // 댓글 삭제
@@ -66,18 +68,6 @@ public class CommentController {
             @AuthenticationPrincipal AuthUserDto userDto
     ) {
         CommentDeleteResponseDto responseComment = commentService.deleteComment(commentId, userDto);
-        return responseEntity(HttpStatus.OK, responseComment);
-    }
-
-    /**
-     * <p>응답 타입의 일관성을 위한 메서드</p>
-     *
-     * @param status 상태메시지
-     * @param body 응답 Dto
-     * @return 성공적으로 반환 했거나 실패 시 Dto의 타입 문제로 서버에러 반환
-     * @param <T> {@link BaseCommentResponseDto}을 상속 받은 ResponseDto
-     */
-    private <T> ResponseEntity<T> responseEntity(HttpStatusCode status, T body) {
-           return ResponseEntity.status(status).body(body);
+        return EntityResponser.responseEntity(HttpStatus.OK, responseComment);
     }
 }

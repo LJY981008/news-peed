@@ -12,10 +12,6 @@ public class Const {
     public static final String POST_URL = BASE_URL + "/post";
     public static final String USER_URL = BASE_URL + "/users";
 
-    public static final String TOKEN_KEY = "mysecretkeyverylongandsecureforjwttokengenerationwhichisatleast32bytes";
-    public static final String BEARER_PREFIX = "Bearer ";
-    public static final long TOKEN_TIME = 60 * 60 * 1000L;
-
     private Const() {
     }
 }
