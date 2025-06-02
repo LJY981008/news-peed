@@ -9,8 +9,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -95,5 +97,37 @@ public class JwtTokenProviderTest {
 
         //when & then
         assertThrows(ResponseStatusException.class, () -> jwtUtil.substringToken(invalidToken));
+    }
+
+    @Test
+    @DisplayName("Null 토큰 테스트")
+    void nullTest(){
+        //given
+        String token = null;
+
+        //when & then
+        try {
+            jwtUtil.substringToken(token);
+            fail("예외가 발생해야합니다");
+        } catch (ResponseStatusException e) {
+            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
+            assertEquals("Not Found Token", e.getReason());
+        }
+    }
+
+    @Test
+    @DisplayName("빈 토큰 테스트")
+    void emptyTest(){
+        //given
+        String token = "";
+
+        //when & then
+        try {
+            jwtUtil.substringToken(token);
+            fail("예외가 발생해야합니다");
+        } catch (ResponseStatusException e) {
+            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
+            assertEquals("Not Found Token", e.getReason());
+        }
     }
 }
