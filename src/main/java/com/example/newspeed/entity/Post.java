@@ -25,7 +25,7 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "integer default 0")
     private int userLikeCount = 0;
 
-    @Column(nullable = false)
+    @Column
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)

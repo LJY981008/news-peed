@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
@@ -17,9 +18,6 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         this.queryFactory = queryFactory;
     }
 
-    @Query("SELECT c FROM Comment c " +
-            "LEFT JOIN FETCH c.user " +
-            "WHERE c.post.postId = :postId AND c.deleted = false")
     /**
      * 페치 조인 적용 포스트 기준 댓글 전체 조회
      *
@@ -40,5 +38,19 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 )
                 .orderBy(comment.createdAt.desc())
                 .fetch();
+    }
+
+    @Override
+    public Optional<Comment> findCommentByCommentId(Long commentId) {
+        QComment comment = QComment.comment;
+        QUser user = QUser.user;
+
+        return queryFactory.selectFrom(comment)
+                .leftJoin(comment.user, user)
+                .where(
+                        comment.commentId.eq(commentId),
+                        comment.deleted.isFalse()
+                )
+                .stream().findAny();
     }
 }
