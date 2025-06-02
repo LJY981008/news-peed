@@ -8,7 +8,7 @@ import com.example.newspeed.entity.User;
 import com.example.newspeed.exception.exceptions.AuthenticationException;
 import com.example.newspeed.exception.exceptions.InvalidRequestException;
 import com.example.newspeed.exception.exceptions.NotFoundException;
-import com.example.newspeed.repository.CommentRepository;
+import com.example.newspeed.repository.Comment.CommentRepository;
 import com.example.newspeed.repository.PostRepository;
 import com.example.newspeed.repository.UserRepository;
 import com.example.newspeed.util.CommentMapper;
@@ -67,7 +67,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentFindResponseDto> findCommentByPostId(Long postId) {
 
-        List<Comment> comments = commentRepository.findByPost_PostIdAndDeletedFalse(postId);
+        List<Comment> comments = commentRepository.findCommentByPostId(postId);
 
         return comments
                 .stream()
