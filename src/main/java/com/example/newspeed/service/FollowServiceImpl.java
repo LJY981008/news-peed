@@ -35,16 +35,8 @@ public class FollowServiceImpl implements FollowService {
     public void follow(Long currentUserId, String targetEmail) {
         User targetUser = getTargetUser(targetEmail);
         Long followedUserId = targetUser.getUserId();
-        
-        if (currentUserId.equals(followedUserId)) {
-            throw new InvalidRequestException("자기 자신은 팔로우할 수 없습니다.");
-        }
-        
-        boolean alreadyFollowing = followRepository
-                .existsByFollowingUserIdAndFollowedUserId(currentUserId, followedUserId);
-        if (alreadyFollowing) {
-            throw new InvalidRequestException("이미 팔로우한 사용자입니다.");
-        }
+
+        validateFollow(currentUserId, followedUserId);
 
         Follow follow = new Follow(currentUserId, followedUserId);
         followRepository.save(follow);
@@ -79,5 +71,20 @@ public class FollowServiceImpl implements FollowService {
     private User getTargetUser(String targetEmail) {
         return userRepository.findByEmailAndDeletedFalse(targetEmail)
                 .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
+    }
+
+    /**
+     * 팔로우 유효성을 검사합니다.
+     *
+     * @param currentUserId 사용자의 고유 식별자
+     * @param targetUserId 팔로우할 대상의 고유 식별자
+     * @return 없음
+     * @throws InvalidRequestException 이미 팔로우한 사용자인 경우
+     * @throws InvalidRequestException 팔로우 대상이 자기 자신인 경우
+     */
+    private void validateFollow(Long currentUserId, Long targetUserId){
+        if(currentUserId.equals(targetUserId)) throw new InvalidRequestException("자기 자신은 팔로우할 수 없습니다.");
+        if(followRepository.existsByFollowingUserIdAndFollowedUserId(currentUserId, targetUserId))
+            throw new InvalidRequestException("이미 팔로우한 사용자입니다.");
     }
 }
