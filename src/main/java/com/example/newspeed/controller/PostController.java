@@ -34,9 +34,9 @@ public class PostController {
      * 게시글 조회
      *
      * @author 김태현
-     * @param date
-     * @param pageable
-     * @return
+     * @param date ( 선택 ) 조회할 날짜, 지정하지 않으면 전체 게시글을 조회
+     * @param pageable 페이징 및 정렬 정보 ( 기본값 size = 10, 정렬기준 modifiedAt, 내림차순
+     * @return 페이징된 게시글 응답 객체 (Page<FindPostResponseDto>)
      */
     //게시글 전체조회
     // modifiedAt 기준으로 정렬
@@ -51,6 +51,11 @@ public class PostController {
         return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
     }
 
+    /**
+     * @author 김태현
+     * @param postId 조회활 게시글의 ID
+     * @return 조회된 게시글 정보를 담은 응답 DTO (FindPostResponseDto)
+     */
     // 게시글 단건 조회
     @GetMapping
     public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam Long postId) {
@@ -59,10 +64,16 @@ public class PostController {
 
     }
 
+    /**
+     * @author 김도연
+     * @param userDto 인증된 사용자 정보 {@link AuthUserDto}
+     * @param pageable 페이징 및 정렬 정보 ( 기본값 size = 10, 정렬기준 modifiedAt, 내림차순
+     * @return 페이징된 게시글 응답 객체 (Page<FindPostResponseDto>)
+     */
     @GetMapping("/find-follow")
     public ResponseEntity<Page<FindPostResponseDto>> findFollowingPost(
             @AuthenticationPrincipal AuthUserDto userDto,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 10, sort = "modifiedAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         Long currentUserId = userDto.getId();
@@ -110,10 +121,10 @@ public class PostController {
      * 게시글 수정
      *
      * @author 김태현
-     * @param postId
-     * @param updateDto
-     * @param authUserDto
-     * @return
+     * @param postId 수정할 게시글의 ID
+     * @param updateDto 수정할 게시글의 제목, 내용이 담긴 요청 DTO
+     * @param authUserDto 로그인한 사용자 정보 ( 작성자 검증에 사용 )
+     * @return {@code 200 ok} 수정된 게시글 정보를 담은 응답 DTO
      */
     // 게시글 수정
     @PatchMapping("/post-update/{postId}")

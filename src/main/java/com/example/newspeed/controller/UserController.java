@@ -2,6 +2,7 @@ package com.example.newspeed.controller;
 
 import com.example.newspeed.config.JwtUtil;
 import com.example.newspeed.constant.Const;
+import com.example.newspeed.dto.follow.FollowRequestDto;
 import com.example.newspeed.dto.user.*;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.service.UserService;
@@ -95,14 +96,28 @@ public class UserController {
         return buildResponse(searchResponseList, HttpStatus.OK);
     }
 
-
+    /**
+     * <p>유저 수정</p>
+     *
+     * @author 김도연
+     * @param updateRequest {@link UpdateUserProfileRequestDto} 요청 DTO
+     * {필수: email / 선택: password, userName, newPassword, intro, profileImage}
+     * @return "success"    반환 Message
+     */
     @PutMapping("/modify")
     public ResponseEntity<String> modifyUserProfile(@Valid @RequestBody UpdateUserProfileRequestDto updateRequest){
         usersService.updateUserProfile(updateRequest);
         return buildResponse("success", HttpStatus.OK);
     }
 
-
+    /**
+     * <p>유저 검색 (전체 검색, 이름 검색, 이메일 검색)</p>
+     *
+     * @author 김도연
+     * @param deleteRequest {@link DeleteUserRequestDto} 요청 DTO
+     * {필수: email, password}
+     * @return "success"    반환 Message
+     */
     @DeleteMapping("/quit")
     public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUserRequestDto deleteRequest){
         usersService.deleteUser(deleteRequest);
