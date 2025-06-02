@@ -2,27 +2,25 @@ package com.example.newspeed.repository.Comment;
 
 import com.example.newspeed.entity.Comment;
 import com.example.newspeed.entity.QComment;
-import com.example.newspeed.entity.QPost;
 import com.example.newspeed.entity.QUser;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public class CommentRepositoryImpl implements CommentRepositoryCustom {
+public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    public CommentRepositoryImpl(JPAQueryFactory queryFactory) {
+    public CommentRepositoryCustomImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
     }
 
     /**
      * 페치 조인 적용 포스트 기준 댓글 전체 조회
      *
-     * @param postId
-     * @return
+     * @param postId 조회할 포스트 ID
+     * @return 페치조인한 댓글 리스트
      */
     @Override
     public List<Comment> findCommentByPostId(Long postId) {
@@ -40,6 +38,12 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .fetch();
     }
 
+    /**
+     * 페치 조인 적용 댓글 단건 조회
+     *
+     * @param commentId 조회할 댓글 ID
+     * @return 페치조인한 댓글
+     */
     @Override
     public Optional<Comment> findCommentByCommentId(Long commentId) {
         QComment comment = QComment.comment;
