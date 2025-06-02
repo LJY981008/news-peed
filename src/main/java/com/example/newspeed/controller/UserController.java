@@ -6,6 +6,7 @@ import com.example.newspeed.dto.follow.FollowRequestDto;
 import com.example.newspeed.dto.user.*;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.service.UserService;
+import com.example.newspeed.util.EntityResponser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,8 +56,7 @@ public class UserController {
 
         SignupUserResponseDto signUpResponseDto = usersService.signUp(signupRequest);
 
-        return buildResponse(signUpResponseDto, HttpStatus.CREATED);
-
+        return EntityResponser.responseEntity(HttpStatus.CREATED, signUpResponseDto);
     }
 
     /**
@@ -93,7 +93,7 @@ public class UserController {
     ){
         List<SearchUserResponseDto> searchResponseList = usersService.search(name, email);
 
-        return buildResponse(searchResponseList, HttpStatus.OK);
+        return EntityResponser.responseEntity(HttpStatus.OK, searchResponseList);
     }
 
     /**
@@ -107,7 +107,7 @@ public class UserController {
     @PutMapping("/modify")
     public ResponseEntity<String> modifyUserProfile(@Valid @RequestBody UpdateUserProfileRequestDto updateRequest){
         usersService.updateUserProfile(updateRequest);
-        return buildResponse("success", HttpStatus.OK);
+        return EntityResponser.responseEntity(HttpStatus.OK, "수정 성공");
     }
 
     /**
@@ -121,9 +121,8 @@ public class UserController {
     @DeleteMapping("/quit")
     public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUserRequestDto deleteRequest){
         usersService.deleteUser(deleteRequest);
-        return buildResponse("success", HttpStatus.OK);
+        return EntityResponser.responseEntity(HttpStatus.OK, "탈퇴 성공");
     }
-
 
     /**
      * <p>통일된 응답을 제공하는 기능</p>
