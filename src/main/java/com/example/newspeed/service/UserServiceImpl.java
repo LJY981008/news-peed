@@ -24,6 +24,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    private static final String passwordErrorMessage = "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character";
+    private static final String loginFailedMessage = "Invalid email or password";
 
     /**
      * <p>회원 가입</p>
@@ -40,20 +42,15 @@ public class UserServiceImpl implements UserService {
         if(userRepository.existsByEmail(signupRequest.getEmail())){
             throw new DuplicateEmailException("Email already in use");
         }
-
-        String rawPassword = signupRequest.getPassword();
-
         // 비밀번호 valid 확인
-        if (!PasswordValidator.isValid(rawPassword)) {
-            throw new InvalidPasswordException("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character");
-        }
-
-        // 비밀번호 encoding
-        final String encodedPassword = passwordEncoder.encode(rawPassword);
+        validatePassword(signupRequest.getPassword());
 
         User user = new User(
-                signupRequest.getEmail(), encodedPassword, signupRequest.getUserName(),
-                signupRequest.getIntro(), signupRequest.getProfileImageUrl());
+                signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword()),
+                signupRequest.getUserName(),
+                signupRequest.getIntro(),
+                signupRequest.getProfileImageUrl());
 
         User savedUser = userRepository.save(user);
 
@@ -72,11 +69,11 @@ public class UserServiceImpl implements UserService {
 
         // 존재하지 않는 이메일일 때 에러 반환
         User findUser = userRepository.findByEmailAndDeletedFalse(loginRequest.getEmail())
-                .orElseThrow(() -> new LoginFailedException("Invalid email or password"));
+                .orElseThrow(() -> new LoginFailedException(loginFailedMessage));
 
         // 비밀번호 일치하지 않을 때 에러 반환
         if (!passwordEncoder.matches(loginRequest.getPassword(), findUser.getPassword())) {
-            throw new LoginFailedException("Invalid email or password");
+            throw new LoginFailedException(loginFailedMessage);
         }
 
         return new LoginUserResponseDto(findUser);
@@ -133,12 +130,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
+    /**
+     * <p>프로필 수정</p>
+     *
+     * @author 김도연
+     * @param updateRequest 수정요청DTO
+     * @return 없음
+     */
     @Override
     @Transactional
-    public void updateUserProfile(UpdateUserProfileRequestDto updateRequest){ //profile 수정 통합 - password 암호화 미구현 상태
+    public void updateUserProfile(UpdateUserProfileRequestDto updateRequest){ //profile 수정 통합
         User user = userRepository.findByEmailAndDeletedFalse(updateRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
+
         if(updateRequest.getUserName() != null){
             user.setUserName(updateRequest.getUserName());
         }
@@ -149,19 +153,38 @@ public class UserServiceImpl implements UserService {
             user.setProfileImageUrl(updateRequest.getProfileImage());
         }
         if(updateRequest.getPassword() != null && updateRequest.getNewPassword() != null){
-            user.setPassword(updateRequest.getNewPassword());
+            //password 형식검증
+            validatePassword(updateRequest.getPassword());
+            validatePassword(updateRequest.getNewPassword());
+
+            // password matching
+            if(!passwordEncoder.matches(updateRequest.getPassword(), user.getPassword())) throw new LoginFailedException(loginFailedMessage);
+
+            user.setPassword(passwordEncoder.encode(updateRequest.getNewPassword()));
         }
     }
 
+    /**
+     * <p>프로필 삭제</p>
+     *
+     * @author 김도연
+     * @param deleteRequest 삭제요청DTO
+     * @return 없음
+     */
     @Override
     @Transactional
     public void deleteUser(DeleteUserRequestDto deleteRequest) {
         User user = userRepository.findByEmailAndDeletedFalse(deleteRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
+        //password 형식검증
+        validatePassword(deleteRequest.getPassword());
+
+        // password matching
+        if(!passwordEncoder.matches(deleteRequest.getPassword(), user.getPassword())) throw new LoginFailedException(loginFailedMessage);
+
         user.softDelete();
         logicalDeleteCascade(user);
         userRepository.save(user);
-        //Bcrypt 암호화 미적용 상태 - 우선 어떤 비밀번호든 상관없이 삭제 요청시 삭제(암호화 적용 시 구현 예정)
     }
 
     private void logicalDeleteCascade(User user){
@@ -170,5 +193,9 @@ public class UserServiceImpl implements UserService {
 
         List<Comment> comments = user.getComments();
         comments.forEach(BaseEntity::softDelete);
+    }
+
+    private void validatePassword(String password){
+        if(!PasswordValidator.isValid(password)) throw new InvalidPasswordException(passwordErrorMessage);
     }
 }
