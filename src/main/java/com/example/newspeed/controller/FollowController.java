@@ -7,8 +7,10 @@ import com.example.newspeed.dto.follow.FollowRequestDto;
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.exception.exceptions.AuthenticationException;
 import com.example.newspeed.service.FollowService;
+import com.example.newspeed.util.EntityResponser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,7 +42,7 @@ public class FollowController {
     ){
         Long currentUserId = userDto.getId();
         followService.follow(currentUserId, followRequest.getTargetEmail());
-        return ResponseEntity.ok("success");
+        return EntityResponser.responseEntity(HttpStatus.OK, "팔로우 성공");
     }
 
     /**
@@ -57,6 +59,6 @@ public class FollowController {
     ){
         Long currentUserId = userDto.getId();
         followService.unfollow(currentUserId, followRequest.getTargetEmail());
-        return ResponseEntity.ok("success");
+        return EntityResponser.responseEntity(HttpStatus.OK, "언팔로우 성공");
     }
 }
