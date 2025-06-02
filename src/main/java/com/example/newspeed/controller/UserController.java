@@ -117,10 +117,6 @@ public class UserController {
      * @return 상태 코드, 응답 바디 반환 (토큰 부여 시 토큰 반환)
      * @param <T> 응답 Dto 또는 String
      */
-    /**
-     * @param body 응답 Dto 또는 응답 메세지
-     * @param status Http 상태 코드
-     */
     private <T> ResponseEntity<T> buildResponse(T body, HttpStatus status) {
         return ResponseEntity.status(status).body(body);
     }
