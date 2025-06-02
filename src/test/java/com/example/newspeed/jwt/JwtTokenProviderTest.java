@@ -1,5 +1,6 @@
 package com.example.newspeed.jwt;
 
+import com.example.newspeed.config.JwtProperties;
 import com.example.newspeed.config.JwtUtil;
 import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.user.AuthUserDto;
@@ -22,6 +23,9 @@ public class JwtTokenProviderTest {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private JwtProperties jwtProperties;
 
     @Test
     @DisplayName("JWT 토큰 생성 테스트")
@@ -84,7 +88,7 @@ public class JwtTokenProviderTest {
         String substringToken = jwtUtil.substringToken(token);
 
         //then
-        assertEquals(token.replace(Const.BEARER_PREFIX, ""), substringToken);
+        assertEquals(token.replace(jwtProperties.getBearerPrefix(), ""), substringToken);
     }
 
     @Test
@@ -93,7 +97,7 @@ public class JwtTokenProviderTest {
         //given
         AuthUserDto userDto = new AuthUserDto(1L, "test@test.com", UserRole.USER);
         String token = jwtUtil.createToken(userDto.getId(), userDto.getEmail(), userDto.getUserRole());
-        final String invalidToken = token.replace(Const.BEARER_PREFIX, "invalid");
+        final String invalidToken = token.replace(jwtProperties.getBearerPrefix(), "invalid");
 
         //when & then
         assertThrows(ResponseStatusException.class, () -> jwtUtil.substringToken(invalidToken));
@@ -111,7 +115,7 @@ public class JwtTokenProviderTest {
             fail("예외가 발생해야합니다");
         } catch (ResponseStatusException e) {
             assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
-            assertEquals("Not Found Token", e.getReason());
+            assertEquals("토큰이 존재하지 않습니다.", e.getReason());
         }
     }
 
@@ -127,7 +131,7 @@ public class JwtTokenProviderTest {
             fail("예외가 발생해야합니다");
         } catch (ResponseStatusException e) {
             assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
-            assertEquals("Not Found Token", e.getReason());
+            assertEquals("토큰이 존재하지 않습니다.", e.getReason());
         }
     }
 }

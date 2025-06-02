@@ -35,35 +35,31 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
         return httpSecurity
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .sessionManagement(session
-                        -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests( auth -> auth
+                .sessionManagement(session -> 
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
                         // 댓글 인가
                         .requestMatchers(HttpMethod.GET, Const.COMMENT_URL).permitAll()
                         .requestMatchers(HttpMethod.POST, Const.COMMENT_URL).hasRole(UserRole.USER.name())
                         .requestMatchers(HttpMethod.DELETE, Const.COMMENT_URL).hasRole(UserRole.USER.name())
                         .requestMatchers(HttpMethod.PATCH, Const.COMMENT_URL).hasRole(UserRole.USER.name())
-                )
-                .authorizeHttpRequests(auth -> auth
+                        
                         // 유저 인가
-                        .requestMatchers(HttpMethod.POST, "/news-peed/users/signup").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/news-peed/users/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/news-peed/users/search").hasRole(UserRole.USER.name())
-                        .requestMatchers(HttpMethod.PUT, "/news-peed/users/modify").hasRole(UserRole.USER.name())
-                        .requestMatchers(HttpMethod.DELETE, "/news-peed/users/quit").hasRole(UserRole.USER.name())
-                )
-                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, Const.USER_URL + "/signup").permitAll()
+                        .requestMatchers(HttpMethod.GET, Const.USER_URL + "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, Const.USER_URL + "/search").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.PUT, Const.USER_URL + "/modify").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.DELETE, Const.USER_URL + "/quit").hasRole(UserRole.USER.name())
+                        
                         // 팔로우 인가
-                        .requestMatchers(HttpMethod.POST, "/news-peed/follows/follow").hasRole(UserRole.USER.name())
-                        .requestMatchers(HttpMethod.DELETE, "/news-peed/follows/unfollow").hasRole(UserRole.USER.name())
-                )
-                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, Const.FOLLOWS_URL + "/follow").hasRole(UserRole.USER.name())
+                        .requestMatchers(HttpMethod.DELETE, Const.FOLLOWS_URL + "/unfollow").hasRole(UserRole.USER.name())
+                        
                         // 게시글 인가
                         .requestMatchers(HttpMethod.PATCH, Const.POST_URL + "/like").hasRole(UserRole.USER.name())
                         .requestMatchers(HttpMethod.POST, Const.POST_URL + "/create-posts").hasRole(UserRole.USER.name())
@@ -73,7 +69,7 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtLoginBlockFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling( configure -> configure
+                .exceptionHandling(configure -> configure
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                 )
