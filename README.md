@@ -97,11 +97,16 @@ GitHub PR 페이지에서 병합 후 Delete branch 버튼을 클릭한다.
 `Comment: 주석 추가한 내용` - 주석 추가 또는 수정 시
 </details>
 
+## 트러블 슈팅
+이준영
+[N+1문제 해결](https://t-era.tistory.com/267)
+[동시성 문제 해결](https://t-era.tistory.com/266)
+
 ## API 명세서
 [API 명세서](https://documenter.getpostman.com/view/44667399/2sB2qdfKhq)
 
 ## ERD
-<img width="900" alt="스크린샷 2025-05-27 오후 7 19 11" src="https://github.com/user-attachments/assets/5612452b-7744-4083-bd43-e3731c993a03" />
+<img width="626" alt="스크린샷 2025-06-02 오후 12 51 25" src="https://github.com/user-attachments/assets/bfa622f3-15d2-4ac8-91ab-66f844ed0a49" />
 
 ## Wire Frame
 ### 회원 기능
