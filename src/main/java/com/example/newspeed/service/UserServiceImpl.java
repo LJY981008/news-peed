@@ -99,9 +99,9 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search by both name and email is not supported");
 
         } else if(name != null){
-            // name으로 유저 검색
+            // name으로 유저 검색, 검색 단어가 포함된 모든 이름 검색
 
-            List<User> userList = userRepository.findByUserNameAndDeletedFalse(name);
+            List<User> userList = userRepository.findByUserNameContainingAndDeletedFalse(name);
 
             if (userList == null || userList.isEmpty()) {
                 throw new NoResultFoundException("No search results found for the user name");
@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
         } else {
             // param 입력되지 않으면 전체 유저 리스트 검색
 
-            List<User> userList = userRepository.findAll();
+            List<User> userList = userRepository.findByDeletedFalse();
 
             if (userList == null || userList.isEmpty()) {
                 throw new NoResultFoundException("No user list found");
