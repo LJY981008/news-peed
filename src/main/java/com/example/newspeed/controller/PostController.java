@@ -9,6 +9,7 @@ import com.example.newspeed.dto.post.CreatePostResponseDto;
 import com.example.newspeed.dto.post.DeletePostResponseDto;
 import com.example.newspeed.dto.post.*;
 import com.example.newspeed.service.PostService;
+import com.example.newspeed.util.EntityResponser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,8 +39,6 @@ public class PostController {
      * @param pageable 페이징 및 정렬 정보 ( 기본값 size = 10, 정렬기준 modifiedAt, 내림차순
      * @return 페이징된 게시글 응답 객체 (Page<FindPostResponseDto>)
      */
-    //게시글 전체조회
-    // modifiedAt 기준으로 정렬
     @GetMapping("/find-all")
     public ResponseEntity<Page<FindPostResponseDto>> findPost(
             @RequestParam(required = false)
@@ -48,23 +47,26 @@ public class PostController {
             Pageable pageable
     ) {
         Page<FindPostResponseDto> findPostResponseDtoList = (date == null) ? postService.findAllPost(pageable) : postService.findAllByDate(date, pageable);
-        return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
+        return EntityResponser.responseEntity(HttpStatus.OK, findPostResponseDtoList);
     }
 
     /**
+     * 게시글 단건 조회
+     *
      * @author 김태현
      * @param postId 조회활 게시글의 ID
      * @return 조회된 게시글 정보를 담은 응답 DTO (FindPostResponseDto)
      */
-    // 게시글 단건 조회
     @GetMapping
     public ResponseEntity<FindPostResponseDto> findByIdPost(@RequestParam Long postId) {
         FindPostResponseDto findDto = postService.findById(postId);
-        return new ResponseEntity<>(findDto, HttpStatus.OK);
+        return EntityResponser.responseEntity(HttpStatus.OK, findDto);
 
     }
 
     /**
+     * 팔로우한 정보 조회
+     *
      * @author 김도연
      * @param userDto 인증된 사용자 정보 {@link AuthUserDto}
      * @param pageable 페이징 및 정렬 정보 ( 기본값 size = 10, 정렬기준 modifiedAt, 내림차순
@@ -79,11 +81,11 @@ public class PostController {
         Long currentUserId = userDto.getId();
         Page<FindPostResponseDto> findPostResponseDtoList = postService.findFollowingPosts(currentUserId, pageable);
 
-        return new ResponseEntity<>(findPostResponseDtoList, HttpStatus.OK);
+        return EntityResponser.responseEntity(HttpStatus.OK, findPostResponseDtoList);
     }
 
     /**
-     * <p>게시글 생성</p>
+     * 게시글 생성
      *
      * @param dto 게시글 생성에 필요한 title, content, imageUrl {@link CreatePostRequestDto}
      * @param userDto 인증된 사용자 정보 {@link AuthUserDto}
@@ -97,11 +99,11 @@ public class PostController {
     ) {
         CreatePostResponseDto post = postService.createPost(dto.getTitle(), dto.getContent(), dto.getImageUrl(),userDto);
 
-        return ResponseEntity.status(201).body(post);
+        return EntityResponser.responseEntity(HttpStatus.CREATED, post);
     }
 
     /**
-     * <p>게시글 삭제</p>
+     * 게시글 삭제
      *
      * @param postId 게시글의 pk값
      * @param authUserDto 인증된 사용자 정보 {@link AuthUserDto}
@@ -114,7 +116,7 @@ public class PostController {
     ) {
         DeletePostResponseDto deletePost = postService.deletePost(postId, authUserDto);
 
-        return ResponseEntity.status(200).body(deletePost);
+        return EntityResponser.responseEntity(HttpStatus.OK, deletePost);
     }
 
     /**
@@ -126,7 +128,6 @@ public class PostController {
      * @param authUserDto 로그인한 사용자 정보 ( 작성자 검증에 사용 )
      * @return {@code 200 ok} 수정된 게시글 정보를 담은 응답 DTO
      */
-    // 게시글 수정
     @PatchMapping("/post-update/{postId}")
     public ResponseEntity<FindPostResponseDto> updatePost(
             @PathVariable Long postId,
@@ -134,7 +135,7 @@ public class PostController {
             @AuthenticationPrincipal AuthUserDto authUserDto
     ) {
         FindPostResponseDto findPostResponseDto = postService.updatePost(postId, authUserDto, updateDto);
-        return new ResponseEntity<>(findPostResponseDto, HttpStatus.OK);
+        return EntityResponser.responseEntity(HttpStatus.OK, findPostResponseDto);
     }
 
     /**
@@ -152,6 +153,6 @@ public class PostController {
     ) {
         postService.toggleLike(postId, authUserDto);
         GetLikeResponseDto postLike = postService.getPostLike(postId);
-        return ResponseEntity.status(HttpStatus.OK).body(postLike);
+        return EntityResponser.responseEntity(HttpStatus.OK, postLike);
     }
 }

@@ -62,16 +62,6 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             chain.doFilter(request, response);
-
-        } catch (SecurityException | MalformedJwtException e) {
-            log.error("유효하지 않는 토큰입니다.", e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 토큰입니다.");
-        } catch (ExpiredJwtException e) {
-            log.error("만료된 토큰입니다.", e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 토큰입니다.");
-        } catch (UnsupportedJwtException e) {
-            log.error("지원되지 않는 토큰입니다.", e);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "지원되지 않는 토큰입니다.");
         } catch (Exception e) {
             log.error("예상치 못한 예외 발생", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
