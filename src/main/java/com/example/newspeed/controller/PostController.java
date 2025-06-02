@@ -64,10 +64,16 @@ public class PostController {
 
     }
 
+    /**
+     * @author 김도연
+     * @param userDto 인증된 사용자 정보 {@link AuthUserDto}
+     * @param pageable 페이징 및 정렬 정보 ( 기본값 size = 10, 정렬기준 modifiedAt, 내림차순
+     * @return 페이징된 게시글 응답 객체 (Page<FindPostResponseDto>)
+     */
     @GetMapping("/find-follow")
     public ResponseEntity<Page<FindPostResponseDto>> findFollowingPost(
             @AuthenticationPrincipal AuthUserDto userDto,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 10, sort = "modifiedAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         Long currentUserId = userDto.getId();
