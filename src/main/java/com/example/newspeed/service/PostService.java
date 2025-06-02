@@ -1,8 +1,7 @@
 package com.example.newspeed.service;
 
-
+import com.example.newspeed.constant.ExceptionMessage;
 import com.example.newspeed.dto.post.*;
-
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.entity.Comment;
 import com.example.newspeed.entity.Post;
@@ -10,6 +9,8 @@ import com.example.newspeed.entity.User;
 import com.example.newspeed.entity.PostLike;
 import com.example.newspeed.enums.UserRole;
 import com.example.newspeed.exception.exceptions.NotFoundException;
+import com.example.newspeed.exception.exceptions.AuthenticationException;
+import com.example.newspeed.exception.exceptions.InvalidRequestException;
 import com.example.newspeed.repository.follow.FollowRepository;
 import com.example.newspeed.repository.like.LikeRepository;
 import com.example.newspeed.repository.PostRepository;
@@ -19,13 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,12 +47,11 @@ public class PostService {
      * @throws NotFoundException 해당 페이지에 게시글이 존재하지 않는 경우
      * @author 김태현
      */
-    // 게시글 전체
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<FindPostResponseDto> findAllPost(Pageable pageable) {
         Page<Post> posts = postRepository.findAllByDeletedFalse(pageable);
         if (posts.isEmpty()) {
-            throw new NotFoundException("해당 페이지는 존재 하지 않습니다."); // 페이지는 0부터 시작합니다.
+            throw new NotFoundException(ExceptionMessage.PAGE_NOT_FOUND);
         }
         return posts.map(FindPostResponseDto::findPostDto);
     }
@@ -69,14 +65,13 @@ public class PostService {
      * @return 페이징된 게시글 목록 (Page<FindPostResponseDto>)
      * @throws NotFoundException 해당 날짜에 생성된 게시글이 하나도 없는 경우
      */
-    // 해당 날짜의 게시글 전체 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<FindPostResponseDto> findAllByDate(LocalDate createdAt, Pageable pageable) {
         LocalDateTime startTime = createdAt.atStartOfDay();
         LocalDateTime endTime = createdAt.plusDays(1).atStartOfDay();
         Page<Post> posts = postRepository.findAllByCreatedAtBetweenAndDeletedFalse(startTime, endTime, pageable);
         if (posts.isEmpty()) {
-            throw new NotFoundException(createdAt + " 날짜에 만들어진 게시물이 없습니다.");
+            throw new NotFoundException(String.format(ExceptionMessage.DATE_POST_NOT_FOUND, createdAt));
         }
         return posts.map(FindPostResponseDto::findPostDto);
     }
@@ -87,19 +82,15 @@ public class PostService {
      * @return 조회된 게시글 정보를 담은 DTO (FindPostResponseDto)
      * @throws NotFoundException 해당 ID의 게시글이 존재하지 않거나 삭제된 경우
      */
-    // 게시글 단건 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public FindPostResponseDto findById(Long postId) {
-        Post findPost = postRepository.findPostByPostIdAndDeletedFalse(postId)
-                .orElseThrow(() -> new NotFoundException("존재 하지 않는 게시글 입니다."));
+        Post findPost = findPostById(postId);
         return new FindPostResponseDto(findPost);
     }
 
-
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<FindPostResponseDto> findFollowingPosts(Long currentUserId, Pageable pageable) {
         List<Long> followedUserIds = followRepository.findFollowedUserIdsByFollowingUserId(currentUserId);
-
         return postRepository.findByUser_UserIdInAndDeletedFalse(followedUserIds, pageable)
                 .map(FindPostResponseDto::findPostDto);
     }
@@ -115,13 +106,11 @@ public class PostService {
      */
     @Transactional
     public CreatePostResponseDto createPost(String title, String content, String imageUrl, AuthUserDto userDto) {
-        Long userId = userDto.getId();
-        User user = usersRepository.findById(userId).orElseThrow(() -> new NotFoundException("로그인이 필요한 서비스입니다."));
+        User user = findUserById(userDto.getId());
         Post post = new Post(title, content, imageUrl, user);
         postRepository.save(post);
         return new CreatePostResponseDto("게시글 생성에 성공했습니다", "/post/find-all");
     }
-
 
     /**
      * <p>게시글 삭제 메서드</p>
@@ -133,14 +122,13 @@ public class PostService {
      */
     @Transactional
     public DeletePostResponseDto deletePost(Long postId, AuthUserDto authUserDto) {
-        Post post = postRepository.findPostByPostIdAndDeletedFalse(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "찾을 수 없는 게시물 입니다."));
-
-        String msg = verifyWriterAuthorities(post, authUserDto);
+        Post post = findPostById(postId);
+        verifyWriterAuthorities(post, authUserDto);
 
         post.softDelete();
         logicalDeleteCascade(post);
         postRepository.save(post);
-        return new DeletePostResponseDto(msg, "/post/find-all");
+        return new DeletePostResponseDto(ExceptionMessage.NORMAL_AUTHORITY, "/post/find-all");
     }
 
     /**
@@ -153,13 +141,14 @@ public class PostService {
      * @throws NotFoundException 게시글이 존재하지 않거나 삭제된 경우
      * @author 김태현
      */
-    // 게시글 수정
     @Transactional
     public FindPostResponseDto updatePost(Long postId, AuthUserDto authUserDto, UpdatePostRequestDto updateDto) {
-        Post findPost = postRepository.findPostByPostIdAndDeletedFalse(postId)
-                .orElseThrow(() -> new NotFoundException("수정할 게시글을 찾지 못했습니다."));
+        Post findPost = findPostById(postId);
+        verifyWriterAuthorities(findPost, authUserDto);
 
-        String msg = verifyWriterAuthorities(findPost, authUserDto);
+        if (findPost.getContent().equals(updateDto.getContents())) {
+            throw new InvalidRequestException("이전 내용과 동일한 내용입니다.");
+        }
 
         findPost.updatePost(updateDto);
         return new FindPostResponseDto(findPost);
@@ -180,9 +169,8 @@ public class PostService {
     )
     @Transactional
     public void toggleLike(Long postId, AuthUserDto authUserDto) {
-
+        Post post = findPostById(postId);
         Optional<PostLike> postLike = likeRepository.findByPostIdAndUserId(postId, authUserDto.getId());
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
 
         if (postLike.isPresent()) {
             PostLike postLikeEntity = postLike.get();
@@ -203,32 +191,27 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public GetLikeResponseDto getPostLike(Long postId) {
-
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
+        Post post = findPostById(postId);
         return new GetLikeResponseDto(post);
     }
 
-    /**
-     * <p>좋아요 테이블 생성<p/>
-     *
-     * @param postId      좋아요에 해당하는 게시글 Index
-     * @param authUserDto 로그인된 사용자 정보
-     * @author 이준영
-     */
-    private void createPostLike(Long postId, AuthUserDto authUserDto) {
+    private Post findPostById(Long postId) {
+        return postRepository.findPostByPostIdAndDeletedFalse(postId)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.POST_NOT_FOUND));
+    }
 
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Not Found Post"));
-        User user = userRepository.findById(authUserDto.getId()).orElseThrow(() -> new NotFoundException("Not Found User"));
+    private User findUserById(Long userId) {
+        return usersRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND));
+    }
+
+    private void createPostLike(Long postId, AuthUserDto authUserDto) {
+        Post post = findPostById(postId);
+        User user = findUserById(authUserDto.getId());
         PostLike postLike = new PostLike(user, post);
         likeRepository.save(postLike);
     }
 
-    /**
-     * <p>좋아요 테이블 삭제</p>
-     *
-     * @param postLike 좋아요 테이블
-     * @author 이준영
-     */
     private void deletePostLike(PostLike postLike) {
         likeRepository.delete(postLike);
     }
@@ -238,20 +221,12 @@ public class PostService {
         comments.forEach(Comment::softDelete);
     }
 
-
-    private String verifyWriterAuthorities(Post post, AuthUserDto authUserDto) {
+    private void verifyWriterAuthorities(Post post, AuthUserDto authUserDto) {
         Long loginUserId = authUserDto.getId();
         UserRole loginUserRole = authUserDto.getUserRole();
-        String msg = "";
 
-        if (loginUserRole == UserRole.ADMIN) {
-            msg = "관리자 권한";
-        } else if (post.getUser().getUserId().equals(loginUserId)) {
-            msg = "정상적";
-        } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다");
+        if (loginUserRole != UserRole.ADMIN && !post.getUser().getUserId().equals(loginUserId)) {
+            throw new AuthenticationException(ExceptionMessage.UNAUTHORIZED);
         }
-
-        return msg;
     }
 }
