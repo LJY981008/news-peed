@@ -126,7 +126,7 @@ public class CommentService {
 
     // 댓글 단건 조회
     private Comment getCommentById(Long commentId) {
-        return commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
+        return commentRepository.findCommentByCommentId(commentId).orElseThrow(() -> new NotFoundException("Not Found Comment"));
     }
 
     /**
