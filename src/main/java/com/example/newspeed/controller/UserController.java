@@ -8,6 +8,7 @@ import com.example.newspeed.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +54,7 @@ public class UserController {
 
         SignupUserResponseDto signUpResponseDto = usersService.signUp(signupRequest);
 
-        return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
+        return buildResponse(signUpResponseDto, HttpStatus.CREATED, null);
 
     }
 
@@ -73,9 +74,7 @@ public class UserController {
         // 유저 email 기준으로 토큰 부여
         String token = jwtUtil.createToken(loginResponseDto.getId(), loginResponseDto.getEmail(), UserRole.USER);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .header("Authorization", token)
-                .body(loginResponseDto);
+        return buildResponse(loginResponseDto, HttpStatus.OK, token);
     }
 
     /**
@@ -93,20 +92,38 @@ public class UserController {
     ){
         List<SearchUserResponseDto> searchResponseList = usersService.search(name, email);
 
-        return new ResponseEntity<>(searchResponseList, HttpStatus.OK);
+        return buildResponse(searchResponseList, HttpStatus.OK, null);
     }
 
 
     @PutMapping("/modify")
     public ResponseEntity<String> modifyUserProfile(@Valid @RequestBody UpdateUserProfileRequestDto updateRequest){
         usersService.updateUserProfile(updateRequest);
-        return ResponseEntity.ok("success");
+        return buildResponse("success", HttpStatus.OK, null);
     }
 
 
     @DeleteMapping("/quit")
     public ResponseEntity<String> quitUser(@Valid @RequestBody DeleteUserRequestDto deleteRequest){
         usersService.deleteUser(deleteRequest);
-        return ResponseEntity.ok("success");
+        return buildResponse("success", HttpStatus.OK, null);
+    }
+
+
+    /**
+     * <p>통일된 응답을 제공하는 기능</p>
+     * @param body 응답 Dto 또는 응답 메세지
+     * @param status Http 상태 코드
+     * @param token 인증 토큰 부여
+     * @return 상태 코드, 응답 바디 반환 (토큰 부여 시 토큰 반환)
+     * @param <T> 응답 Dto 또는 String
+     */
+    private <T> ResponseEntity<T> buildResponse(T body, HttpStatus status, String token) {
+        if (token != null && !token.isEmpty()) {
+            return ResponseEntity.status(status)
+                    .header("Authorization", token)
+                    .body(body);
+        }
+        return ResponseEntity.status(status).body(body);
     }
 }
