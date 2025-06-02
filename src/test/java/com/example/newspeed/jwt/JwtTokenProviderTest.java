@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class JwtTokenProviderTest {
@@ -27,5 +28,24 @@ public class JwtTokenProviderTest {
 
         //then
         assertNotNull(token);
+    }
+
+    @Test
+    @DisplayName("JWT 토큰 정보 추출 테스트")
+    void getTokenTest(){
+        //given
+        AuthUserDto userDto = new AuthUserDto(1L, "test@test.com", UserRole.USER);
+        String token = jwtUtil.createToken(userDto.getId(), userDto.getEmail(), userDto.getUserRole());
+
+        //when
+        token = jwtUtil.substringToken(token);
+        Long extractedUserId = jwtUtil.getUserId(token);
+        String extractedUserEmail = jwtUtil.getEmail(token);
+        UserRole extractedUserRole = jwtUtil.getUserRole(token);
+
+        //then
+        assertEquals(userDto.getId(), extractedUserId);
+        assertEquals(userDto.getEmail(), extractedUserEmail);
+        assertEquals(userDto.getUserRole(), extractedUserRole);
     }
 }
