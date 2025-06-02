@@ -1,6 +1,7 @@
 package com.example.newspeed.jwt;
 
 import com.example.newspeed.config.JwtUtil;
+import com.example.newspeed.constant.Const;
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.enums.UserRole;
 import io.jsonwebtoken.Claims;
@@ -8,9 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class JwtTokenProviderTest {
@@ -79,6 +82,18 @@ public class JwtTokenProviderTest {
         String substringToken = jwtUtil.substringToken(token);
 
         //then
-        assertEquals(token.replace("bearer ", ""), token);
+        assertEquals(token.replace(Const.BEARER_PREFIX, ""), substringToken);
+    }
+
+    @Test
+    @DisplayName("잘못된 Bearer 변환 테스트")
+    void invalidTokenTest(){
+        //given
+        AuthUserDto userDto = new AuthUserDto(1L, "test@test.com", UserRole.USER);
+        String token = jwtUtil.createToken(userDto.getId(), userDto.getEmail(), userDto.getUserRole());
+        final String invalidToken = token.replace(Const.BEARER_PREFIX, "invalid");
+
+        //when & then
+        assertThrows(ResponseStatusException.class, () -> jwtUtil.substringToken(invalidToken));
     }
 }
