@@ -50,9 +50,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<FindPostResponseDto> findAllPost(Pageable pageable) {
         Page<Post> posts = postRepository.findAllByDeletedFalse(pageable);
-        if (posts.isEmpty()) {
-            throw new NotFoundException(ExceptionMessage.PAGE_NOT_FOUND);
-        }
+        validatePageNotEmpty(posts);
         return posts.map(FindPostResponseDto::findPostDto);
     }
 
@@ -70,9 +68,7 @@ public class PostService {
         LocalDateTime startTime = createdAt.atStartOfDay();
         LocalDateTime endTime = createdAt.plusDays(1).atStartOfDay();
         Page<Post> posts = postRepository.findAllByCreatedAtBetweenAndDeletedFalse(startTime, endTime, pageable);
-        if (posts.isEmpty()) {
-            throw new NotFoundException(String.format(ExceptionMessage.DATE_POST_NOT_FOUND, createdAt));
-        }
+        validatePageNotEmpty(posts);
         return posts.map(FindPostResponseDto::findPostDto);
     }
 
@@ -146,10 +142,7 @@ public class PostService {
         Post findPost = findPostById(postId);
         verifyWriterAuthorities(findPost, authUserDto);
 
-        if (findPost.getContent().equals(updateDto.getContents())) {
-            throw new InvalidRequestException("이전 내용과 동일한 내용입니다.");
-        }
-
+        validateContentNotSame(findPost, updateDto);
         findPost.updatePost(updateDto);
         return new FindPostResponseDto(findPost);
     }
@@ -173,12 +166,9 @@ public class PostService {
         Optional<PostLike> postLike = likeRepository.findByPostIdAndUserId(postId, authUserDto.getId());
 
         if (postLike.isPresent()) {
-            PostLike postLikeEntity = postLike.get();
-            likeRepository.updateLikeStatus(post, false);
-            deletePostLike(postLikeEntity);
+            handleExistingLike(post, postLike.get());
         } else {
-            likeRepository.updateLikeStatus(post, true);
-            createPostLike(postId, authUserDto);
+            handleNewLike(post, postId, authUserDto);
         }
     }
 
@@ -203,6 +193,28 @@ public class PostService {
     private User findUserById(Long userId) {
         return usersRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND));
+    }
+
+    private void validatePageNotEmpty(Page<Post> posts) {
+        if (posts.isEmpty()) {
+            throw new NotFoundException(ExceptionMessage.PAGE_NOT_FOUND);
+        }
+    }
+
+    private void validateContentNotSame(Post post, UpdatePostRequestDto updateDto) {
+        if (post.getContent().equals(updateDto.getContents())) {
+            throw new InvalidRequestException(ExceptionMessage.SAME_CONTENT);
+        }
+    }
+
+    private void handleExistingLike(Post post, PostLike postLike) {
+        likeRepository.updateLikeStatus(post, false);
+        deletePostLike(postLike);
+    }
+
+    private void handleNewLike(Post post, Long postId, AuthUserDto authUserDto) {
+        likeRepository.updateLikeStatus(post, true);
+        createPostLike(postId, authUserDto);
     }
 
     private void createPostLike(Long postId, AuthUserDto authUserDto) {
