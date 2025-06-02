@@ -3,6 +3,7 @@ package com.example.newspeed.jwt;
 import com.example.newspeed.config.JwtUtil;
 import com.example.newspeed.dto.user.AuthUserDto;
 import com.example.newspeed.enums.UserRole;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +48,23 @@ public class JwtTokenProviderTest {
         assertEquals(userDto.getId(), extractedUserId);
         assertEquals(userDto.getEmail(), extractedUserEmail);
         assertEquals(userDto.getUserRole(), extractedUserRole);
+    }
+
+    @Test
+    @DisplayName("JWT 토큰 파싱 테스트")
+    void parseTokenTest(){
+        //given
+        AuthUserDto userDto = new AuthUserDto(1L, "test@test.com", UserRole.USER);
+        String token = jwtUtil.createToken(userDto.getId(), userDto.getEmail(), userDto.getUserRole());
+
+        //when
+        token = jwtUtil.substringToken(token);
+        Claims claims = jwtUtil.extractClaims(token);
+
+        //then
+        assertNotNull(token);
+        assertEquals(String.valueOf(userDto.getId()), claims.getSubject());
+        assertEquals(userDto.getEmail(), claims.get("email", String.class));
+        assertEquals(userDto.getUserRole().name(), claims.get("userRole", String.class));
     }
 }
