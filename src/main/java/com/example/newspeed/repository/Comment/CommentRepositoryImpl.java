@@ -47,6 +47,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
         return queryFactory.selectFrom(comment)
                 .leftJoin(comment.user, user)
+                .fetchJoin()
                 .where(
                         comment.commentId.eq(commentId),
                         comment.deleted.isFalse()
