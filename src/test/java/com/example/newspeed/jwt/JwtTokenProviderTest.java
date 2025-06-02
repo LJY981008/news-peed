@@ -67,4 +67,18 @@ public class JwtTokenProviderTest {
         assertEquals(userDto.getEmail(), claims.get("email", String.class));
         assertEquals(userDto.getUserRole().name(), claims.get("userRole", String.class));
     }
+
+    @Test
+    @DisplayName("Bearer 변환 테스트")
+    void substringTokenTest(){
+        //given
+        AuthUserDto userDto = new AuthUserDto(1L, "test@test.com", UserRole.USER);
+        String token = jwtUtil.createToken(userDto.getId(), userDto.getEmail(), userDto.getUserRole());
+
+        //when
+        String substringToken = jwtUtil.substringToken(token);
+
+        //then
+        assertEquals(token.replace("bearer ", ""), token);
+    }
 }
