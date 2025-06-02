@@ -98,8 +98,8 @@ GitHub PR 페이지에서 병합 후 Delete branch 버튼을 클릭한다.
 </details>
 
 ## 트러블 슈팅
-이준영
-[N+1문제 해결](https://t-era.tistory.com/267)
+이준영 : 
+[N+1문제 해결](https://t-era.tistory.com/267),
 [동시성 문제 해결](https://t-era.tistory.com/266)
 
 ## API 명세서
