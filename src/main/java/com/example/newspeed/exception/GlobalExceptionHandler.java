@@ -29,8 +29,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFoundException(NotFoundException e) {
-        Map<String, Object> errors = Map.of("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+        return buildDetailErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -42,8 +41,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
-        Map<String, Object> errors = Map.of("message", bindingResult.getFieldError().getDefaultMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        String message = bindingResult.getFieldError().getDefaultMessage();
+        return buildDetailErrorResponse(message, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -54,8 +53,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthenticationException(AuthenticationException e) {
-        Map<String, Object> errors = Map.of("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
+        return buildDetailErrorResponse(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     /**{@link ResponseStatusException} 예외처리
@@ -67,14 +65,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException e) {
         String message = Optional.ofNullable(e.getReason()).orElse("알 수 없는 오류가 발생했습니다.");
-        Map<String, Object> errors = Map.of("message",message);
-        return ResponseEntity.status(e.getStatusCode()).body(errors);
+        HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
+        return buildDetailErrorResponse(message, status);
     }
 
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidRequestException(InvalidRequestException e) {
-        Map<String, Object> errors = Map.of("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        return buildDetailErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
@@ -87,9 +84,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(DuplicateEmailException e) {
-        Map<String, String> errorBody = new HashMap<>();
-        errorBody.put("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+        return buildSimpleErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
@@ -102,9 +97,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(InvalidPasswordException e) {
-        Map<String, String> errorBody = new HashMap<>();
-        errorBody.put("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+        return buildSimpleErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
@@ -117,9 +110,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(LoginFailedException.class)
     public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(LoginFailedException e) {
-        Map<String, String> errorBody = new HashMap<>();
-        errorBody.put("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+        return buildSimpleErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
@@ -132,10 +123,14 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NoResultFoundException.class)
     public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(NoResultFoundException e) {
-        Map<String, String> errorBody = new HashMap<>();
-        errorBody.put("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.OK).body(errorBody);
+        return buildSimpleErrorResponse(e.getMessage(), HttpStatus.OK);
     }
 
-
+    //공통 응답 생성 메소드
+    private ResponseEntity<Map<String, Object>> buildDetailErrorResponse(String message, HttpStatus status){
+        return ResponseEntity.status(status).body(Map.of("message", message));
+    }
+    private ResponseEntity<Map<String, String>> buildSimpleErrorResponse(String message, HttpStatus status){
+        return ResponseEntity.status(status).body(Map.of("message", message));
+    }
 }
